@@ -60,15 +60,34 @@ void CustomWaypoints::onDeactivate() {
     RCLCPP_INFO(_node.get_logger(), "CustomWaypoints mode deactivated");
     // Reset trajectory setpoint
 }
-void CustomWaypoints::updateSetpoint([[maybe_unused]] float dt_s) {
-    if (_current_waypoint_index < _trajectory_waypoints.size()) {
+
+
+void CustomWaypoints::updateSetpoint([[maybe_unused]] float dt_s)
+{
+    if (_current_waypoint_index < _trajectory_waypoints.size())
+    {
         // Set the trajectory setpoint to the current waypoint
         auto current_waypoint = _trajectory_waypoints[_current_waypoint_index];
-        _trajectory_setpoint->updatePosition(current_waypoint);
+        Eigen::Vector3f current_pos = _local_position->positionNed();
+
+        // Use position setpoints for x and y, velocity for z
+        float dz = current_waypoint.z() - current_pos.z();
+        float max_vz = 0.5f; // max vertical speed (m/s)
+        float vz = std::clamp(dz, -max_vz, max_vz); // smooth vertical speed
 
 
-        // Check if we reached the current waypoint
-        if ((_local_position->positionNed() - current_waypoint).norm() < 0.5f) {
+        Eigen::Vector3f velocity(0.0f, 0.0f, vz);
+        std::optional<float> yaw = std::nullopt;
+        std::optional<float> yaw_rate = std::nullopt;
+
+        // Only set x/y position, use velocity for z
+        Eigen::Vector3f setpoint_xy(current_waypoint.x(), current_waypoint.y(), std::numeric_limits<float>::quiet_NaN());
+        _trajectory_setpoint->update(setpoint_xy, velocity, yaw, yaw_rate);
+
+        // Check if we reached the current waypoint (xy and z)
+        float xy_dist = (current_pos.head<2>() - current_waypoint.head<2>()).norm();
+        float z_dist = std::abs(dz);
+        if (xy_dist < 0.5f && z_dist < 0.2f) {
             _current_waypoint_index++; // Move to the next waypoint
         }
     } else {
@@ -238,14 +257,17 @@ void CustomYaw::updateSetpoint([[maybe_unused]] float dt_s) {
 // }
 
 // void CustomAltitude::updateSetpoint([[maybe_unused]] float dt_s) {
-//     // Maintain current position but change altitude to -3.0 meters
-//     Eigen::Vector3f target_position = _local_position->positionNed();
-//     target_position.z() = -3.0f; // Set target altitude to -3.0 meters
-//     _trajectory_setpoint->updatePosition(target_position);
-//     // Check if we reached the target altitude
-//     if (std::abs(_local_position->positionNed().z() - target_position.z()) < 0.1f) {
+//     // Command a constant vertical velocity to increase altitude
+//     // For PX4 NED: negative velocity.z increases altitude
+//     Eigen::Vector3f velocity(0.0f, 0.0f, -0.5f); // Climb at 0.5 m/s
+//     std::optional<Eigen::Vector3f> acceleration = std::nullopt;
+//     std::optional<float> yaw = std::nullopt;
+//     std::optional<float> yaw_rate = std::nullopt;
+//     _trajectory_setpoint->update(velocity, acceleration, yaw, yaw_rate);
+//     // Optionally, add a condition to stop after a certain altitude change
+//     if (_local_position->positionNed().z() < -3.0f) { // Example: stop at -3.0m
 //         RCLCPP_INFO(_node.get_logger(), "CustomAltitude mode reached target altitude.");
 //         completed(px4_ros2::Result::Success);
-//         return; // Exit the update loop
+//         return;
 //     }
 // }
