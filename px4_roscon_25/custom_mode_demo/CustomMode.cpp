@@ -44,13 +44,9 @@ void CustomYaw::loadParameters() {
 void CustomWaypoints::onActivate() {
     // Initialize waypoints
 
-    _trajectory_waypoints.push_back(Eigen::Vector3f(5.0f, 0.0f, -1.5f));
-    _trajectory_waypoints.push_back(Eigen::Vector3f(5.0f, 5.0f, -1.5f));
-    _trajectory_waypoints.push_back(Eigen::Vector3f(-5.0f, 5.0f, -1.5f));
-    _trajectory_waypoints.push_back(Eigen::Vector3f(-5.0f, -5.0f, -1.5f));
-    _trajectory_waypoints.push_back(Eigen::Vector3f(5.0f, -5.0f, -1.5f));
-    _trajectory_waypoints.push_back(Eigen::Vector3f(5.0f, 0.0f, -1.5f));
-    _trajectory_waypoints.push_back(Eigen::Vector3f(0.0f, 0.0f, -1.5f));
+    _trajectory_waypoints.push_back(Eigen::Vector3f(78.8f,76.2f, -1.5f));
+    _trajectory_waypoints.push_back(Eigen::Vector3f(201.3f,	343.2f, -1.5f));
+    _trajectory_waypoints.push_back(Eigen::Vector3f(63.4f, 49.7f, -1.5f));
 
     _current_waypoint_index = 0; // Start at the first waypoint
     RCLCPP_INFO(_node.get_logger(), "CustomWaypoints mode activated");
@@ -70,19 +66,18 @@ void CustomWaypoints::updateSetpoint([[maybe_unused]] float dt_s)
         auto current_waypoint = _trajectory_waypoints[_current_waypoint_index];
         Eigen::Vector3f current_pos = _local_position->positionNed();
 
+        
         // Use position setpoints for x and y, velocity for z
-        float dz = current_waypoint.z() - current_pos.z();
+        float dz = current_waypoint.z() - _local_position->distanceGround();
         float max_vz = 0.5f; // max vertical speed (m/s)
         float vz = std::clamp(dz, -max_vz, max_vz); // smooth vertical speed
-
-
-        Eigen::Vector3f velocity(0.0f, 0.0f, vz);
-        std::optional<float> yaw = std::nullopt;
-        std::optional<float> yaw_rate = std::nullopt;
-
-        // Only set x/y position, use velocity for z
-        Eigen::Vector3f setpoint_xy(current_waypoint.x(), current_waypoint.y(), std::numeric_limits<float>::quiet_NaN());
-        _trajectory_setpoint->update(setpoint_xy, velocity, yaw, yaw_rate);
+        
+        
+        _setpoint
+            .withPositionX(current_waypoint.x())
+            .withPositionY(current_waypoint.y())
+            .withVelocityZ(vz);
+        _trajectory_setpoint->update(_setpoint);
 
         // Check if we reached the current waypoint (xy and z)
         float xy_dist = (current_pos.head<2>() - current_waypoint.head<2>()).norm();
@@ -90,6 +85,7 @@ void CustomWaypoints::updateSetpoint([[maybe_unused]] float dt_s)
         if (xy_dist < 0.5f && z_dist < 0.2f) {
             _current_waypoint_index++; // Move to the next waypoint
         }
+        
     } else {
         // All waypoints completed, reset or stop
         RCLCPP_INFO(_node.get_logger(), "All waypoints completed.");

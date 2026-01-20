@@ -22,6 +22,10 @@
 #include <Eigen/Eigen>
 #include <chrono>
 
+
+
+
+
 class CustomWaypoints : public px4_ros2::ModeBase {
 public:
     explicit CustomWaypoints(rclcpp::Node &node);
@@ -38,12 +42,17 @@ private:
 
 
     // px4_ros2_cpp
+    px4_ros2::TrajectorySetpoint _setpoint;
     std::shared_ptr<px4_ros2::TrajectorySetpointType> _trajectory_setpoint;
     std::shared_ptr<px4_ros2::OdometryLocalPosition> _local_position;
 
     std::vector<Eigen::Vector3f> _trajectory_waypoints; // Vector to hold waypoints
     size_t _current_waypoint_index; // Index of the current waypoint
 };
+
+
+
+
 
 class CustomYaw : public px4_ros2::ModeBase {
 public:

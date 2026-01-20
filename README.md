@@ -9,6 +9,34 @@
     </a>
 </p>
 
+## Launch
+1. Gazebo and Baylands World
+    ```console
+    python3 /home/ubuntu/PX4-gazebo-models/simulation-gazebo --model_store /home/ubuntu/PX4-gazebo-models/ --world baylands
+    ```
+
+2. Model Lidar Down: 4016
+    ```console
+    PX4_GZ_STANDALONE=1 PX4_SYS_AUTOSTART=4016 PX4_PARAM_UXRCE_DDS_SYNCT=0 /home/ubuntu/px4_sitl/bin/px4 -w /home/ubuntu/px4_sitl/romfs
+    ```
+
+3. QGC:
+    ```concole
+    /home/ubuntu/QGroundControl/qgroundcontrol
+    ```
+
+4. Common Launch:
+    ```concole
+    ros2 launch px4_roscon_25 common.launch.py
+    ```
+
+5. Custom Code:
+    ```concole
+    ros2 launch custom_mode_demo custom_mode_demo.launch.py
+    ```
+  
+
+
 ## About
 
 Picture yourself in Gazebo, sending velocity, position, and acceleration commands straight from your ROS 2 nodes while PX4 quietly manages real-time flight control and built-in safety.
