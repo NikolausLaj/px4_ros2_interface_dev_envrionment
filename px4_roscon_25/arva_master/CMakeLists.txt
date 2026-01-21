@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
   src/CustomModeExecutor.cpp
 )
 
+
 # Ensure the compiler can find headers in the include directory
 target_include_directories(${PROJECT_NAME}
   PUBLIC
@@ -38,10 +39,33 @@ ament_target_dependencies(${PROJECT_NAME}
   geometry_msgs
   tf2_ros
   tf2
+  )
+  
+add_executable(terrain_follow_controller 
+  src/TerrainFollowControllerNode.cpp
+)
+
+target_include_directories(terrain_follow_controller 
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(terrain_follow_controller 
+  rclcpp
+  px4_ros2_cpp
+  Eigen3
+  geometry_msgs
+  tf2_ros
+  tf2
 )
 
 # Install the binary
 install(TARGETS ${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS terrain_follow_controller
   DESTINATION lib/${PROJECT_NAME}
 )
 

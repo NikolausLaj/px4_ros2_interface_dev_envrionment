@@ -34,18 +34,17 @@ class WaypointFollow : public px4_ros2::ModeBase {
         void updateSetpoint([[maybe_unused]] float dt_s) override;
 
     private:
-        void loadParameters();
-        // ROS 2
+        // Member Var
+        double _cmd_z_vel;
         rclcpp::Node &_node;
-
-
-        // px4_ros2_cpp
+        px4_ros2::TrajectorySetpoint _setpoint;
+        std::vector<Eigen::Vector3f> _trajectory_waypoints; // Vector to hold waypoints
+        size_t _current_waypoint_index; // Index of the current waypoint     
         std::shared_ptr<px4_ros2::TrajectorySetpointType> _trajectory_setpoint;
         std::shared_ptr<px4_ros2::OdometryLocalPosition> _local_position;
-        rclcpp::Subscription<px4_msgs::msg::VehicleLocalPosition>::SharedPtr _vehicle_local_position_sub;
 
-        void vehicleLocalPositionCallback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg);
-
-        std::vector<Eigen::Vector3f> _trajectory_waypoints; // Vector to hold waypoints
-        size_t _current_waypoint_index; // Index of the current waypoint
+        // Subscriber
+        rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr _terrain_cmd_vel;
+        
+        void loadParameters();
 };

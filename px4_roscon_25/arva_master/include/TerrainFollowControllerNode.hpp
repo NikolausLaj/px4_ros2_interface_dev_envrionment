@@ -1,0 +1,30 @@
+#include "rclcpp/rclcpp.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+#include <px4_msgs/msg/trajectory_setpoint.hpp>
+#include <px4_msgs/msg/vehicle_local_position.hpp>
+
+class TerrainFollowController : public rclcpp::Node
+{
+    public:
+        TerrainFollowController();
+
+    private:
+        // TODO: Add Validity Check of the Distance Measurement
+        // Member Variables
+        double _target_alt;
+        double _kp, _ki, _kd;
+        double _max_vel, _min_vel;
+
+        // Methods
+        void getParameters();
+
+        // Subscribers
+        rclcpp::Subscription<px4_msgs::msg::VehicleLocalPosition>::SharedPtr _vehicle_local_position_sub;
+
+        // Publishers
+        rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr _cmd_vel_pub;
+
+        // Callbacks
+        void vehicleLocalPositionCallback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg);
+        
+};

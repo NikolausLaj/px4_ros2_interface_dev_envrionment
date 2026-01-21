@@ -19,6 +19,7 @@ Teleop::Teleop(rclcpp::Node& node)
             _last_twist = *msg;
             _last_twist_time = _clock->now();
         });
+        
     _active_sub = _node.create_subscription<std_msgs::msg::Bool>(
         "/teleop/active", 10,
         [this](const std_msgs::msg::Bool::SharedPtr msg) {

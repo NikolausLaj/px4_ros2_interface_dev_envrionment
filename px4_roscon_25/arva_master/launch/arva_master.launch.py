@@ -43,6 +43,15 @@ def generate_launch_description():
             ]
         ),
         Node(
+            package="arva_master",
+            executable="terrain_follow_controller",
+            name="terrain_follow_controller",
+            output="screen",
+            parameters=[
+                {"use_sim_time": True}
+            ]
+        ),
+        Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
             name="gz_clock_bridge",
@@ -50,15 +59,6 @@ def generate_launch_description():
                 {"config_file": clock_bridge_config_file}
             ],
             condition=IfCondition(LaunchConfiguration("run_gz_clock_bridge"))
-        ),
-        Node(
-            package="precision_land",
-            executable="precision_land",
-            name="precision_land",
-            output="screen",
-            parameters=[
-                {"use_sim_time": True}
-            ]
         ),
         ExecuteProcess(
             cmd=["MicroXRCEAgent", "udp4", "-p", "8888", "-v", "3"],
