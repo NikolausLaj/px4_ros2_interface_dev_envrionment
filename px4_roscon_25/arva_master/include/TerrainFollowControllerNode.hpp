@@ -11,9 +11,11 @@ class TerrainFollowController : public rclcpp::Node
     private:
         // TODO: Add Validity Check of the Distance Measurement
         // Member Variables
-        double _target_alt;
+        double _target_alt, _error, _integral;
         double _kp, _ki, _kd;
         double _max_vel, _min_vel;
+        double _last_error = 0.0;
+        std::chrono::steady_clock::time_point _last_call_time;
 
         // Methods
         void getParameters();

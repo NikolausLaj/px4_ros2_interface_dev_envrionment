@@ -46,5 +46,9 @@ class WaypointFollow : public px4_ros2::ModeBase {
         // Subscriber
         rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr _terrain_cmd_vel;
         
+        // Methods
         void loadParameters();
+
+        // Callbacks
+        void terrainFollowCallback(const std::shared_ptr <const geometry_msgs::msg::Twist> &msg);
 };

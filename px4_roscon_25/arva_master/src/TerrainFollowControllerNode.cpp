@@ -46,8 +46,29 @@ void TerrainFollowController::getParameters()
 void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg)
 {
     geometry_msgs::msg::Twist cmd_vel_msg;
-    cmd_vel_msg.linear.z = msg->dist_bottom;
+    
+    auto current_call_time = std::chrono::steady_clock::now();
+    double dt = std::chrono::duration<double>( current_call_time - _last_call_time ).count();
+    
+    _error = _target_alt - msg->dist_bottom ;
+    _integral += _error * dt;
+    double derivative = ( _error - _last_error ) / dt;
+    
+    double control_signal = - (_kp * _error + _ki * _integral + _kd * derivative);
+
+    if ( control_signal > _max_vel )
+    {
+        control_signal = _max_vel;
+    }
+    else if ( control_signal < _min_vel )
+    {
+        control_signal = _min_vel;
+    }
+
+    cmd_vel_msg.linear.z = control_signal;
     _cmd_vel_pub->publish(cmd_vel_msg);
+    _last_call_time = current_call_time;
+    _last_error = _error;
 }
 
 
