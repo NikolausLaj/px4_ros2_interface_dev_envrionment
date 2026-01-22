@@ -54,7 +54,7 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
     _integral += _error * dt;
     double derivative = ( _error - _last_error ) / dt;
     
-    double control_signal = - (_kp * _error + _ki * _integral + _kd * derivative);
+    double control_signal = - _kp * _error; // + _ki * _integral + _kd * derivative;
 
     if ( control_signal > _max_vel )
     {
@@ -69,6 +69,8 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
     _cmd_vel_pub->publish(cmd_vel_msg);
     _last_call_time = current_call_time;
     _last_error = _error;
+
+    RCLCPP_INFO(this->get_logger(), "Measure Dist.: %f, Error: %f, Controll Sig.: %f", msg->dist_bottom, _error, control_signal);
 }
 
 

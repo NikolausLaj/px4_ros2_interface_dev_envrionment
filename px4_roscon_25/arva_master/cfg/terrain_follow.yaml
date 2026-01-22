@@ -4,5 +4,5 @@ tello_terrain_follow_node:
     kp: 0.7
     ki: 0.1
     kd: 0.05
-    max_vel: 1.0
-    min_vel: -1.0
+    max_vel: 5.0
+    min_vel: -5.0

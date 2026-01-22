@@ -41,7 +41,7 @@ void WaypointFollow::onActivate()
     _trajectory_waypoints.push_back(Eigen::Vector3f(0.0f, 10.0f, -1.5f));
     _trajectory_waypoints.push_back(Eigen::Vector3f(0.0f, 0.0f, -1.5f));
 
-
+    // Baylands Coordinates
     // _trajectory_waypoints.push_back(Eigen::Vector3f(78.8f,76.2f, -1.5f));
     // _trajectory_waypoints.push_back(Eigen::Vector3f(201.3f,	343.2f, -1.5f));
     // _trajectory_waypoints.push_back(Eigen::Vector3f(63.4f, 49.7f, -1.5f));
@@ -92,5 +92,4 @@ void WaypointFollow::updateSetpoint([[maybe_unused]] float dt_s)
 void WaypointFollow::terrainFollowCallback(const std::shared_ptr<const geometry_msgs::msg::Twist> &msg)
 {
     _cmd_z_vel = msg->linear.z;
-    RCLCPP_INFO(_node.get_logger(), "Z-Vel. = %f", msg->linear.z);
 }
