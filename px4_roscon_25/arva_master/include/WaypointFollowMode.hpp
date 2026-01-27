@@ -48,6 +48,7 @@ class WaypointFollow : public px4_ros2::ModeBase {
         
         // Methods
         void loadParameters();
+        bool checkIfReached(Eigen::Vector3f &current_waypoint) const;
 
         // Callbacks
         void terrainFollowCallback(const std::shared_ptr <const geometry_msgs::msg::Twist> &msg);

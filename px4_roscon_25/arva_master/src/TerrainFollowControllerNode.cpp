@@ -23,12 +23,12 @@ TerrainFollowController::TerrainFollowController() : Node("terrain_follow_contro
 
 void TerrainFollowController::getParameters()
 {
-    this->declare_parameter("target_distance", 3.0);
-    this->declare_parameter("kp", 0.7);
+    this->declare_parameter("target_distance", 2.0);
+    this->declare_parameter("kp", 0.8);
     this->declare_parameter("ki", 0.1);
     this->declare_parameter("kd", 0.05);
-    this->declare_parameter("max_vel", 1.0);
-    this->declare_parameter("min_vel", -1.0);
+    this->declare_parameter("max_vel", 2.0);
+    this->declare_parameter("min_vel", -2.0);
 
     _target_alt = this->get_parameter("target_distance").as_double();
     _kp = this->get_parameter("kp").as_double();
