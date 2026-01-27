@@ -1,7 +1,7 @@
 {
     "name": "px4_roscon_25_linux",
     "image": "dronecode/roscon-25-workshop:latest",
-    "forwardPorts": [8765],
+    "forwardPorts": [8765, 8787],
     "remoteEnv": {
         "DISPLAY": "${localEnv:DISPLAY}"
     },

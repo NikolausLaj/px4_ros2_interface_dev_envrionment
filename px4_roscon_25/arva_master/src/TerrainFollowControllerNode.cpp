@@ -23,7 +23,7 @@ TerrainFollowController::TerrainFollowController() : Node("terrain_follow_contro
 
 void TerrainFollowController::getParameters()
 {
-    this->declare_parameter("target_distance", 2.0);
+    this->declare_parameter("target_distance", 4.0);
     this->declare_parameter("kp", 0.8);
     this->declare_parameter("ki", 0.1);
     this->declare_parameter("kd", 0.05);
@@ -54,7 +54,7 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
     _integral += _error * dt;
     double derivative = ( _error - _last_error ) / dt;
     
-    double control_signal = - _kp * _error; // + _ki * _integral + _kd * derivative;
+    double control_signal = _kp * _error + _ki * _integral; //+ _kd * derivative;
 
     if ( control_signal > _max_vel )
     {
@@ -65,7 +65,7 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
         control_signal = _min_vel;
     }
 
-    cmd_vel_msg.linear.z = control_signal;
+    cmd_vel_msg.linear.z = -control_signal;
     _cmd_vel_pub->publish(cmd_vel_msg);
     _last_call_time = current_call_time;
     _last_error = _error;

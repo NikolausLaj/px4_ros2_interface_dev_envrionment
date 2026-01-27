@@ -50,7 +50,7 @@ def generate_launch_description():
             package='foxglove_bridge',
             executable='foxglove_bridge',
             parameters=[
-                {'use_sim_time': True,
+                {
                   'port': 8787}
             ],
         ),
