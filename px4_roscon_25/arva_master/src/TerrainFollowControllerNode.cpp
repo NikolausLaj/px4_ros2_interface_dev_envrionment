@@ -26,7 +26,7 @@ void TerrainFollowController::getParameters()
     this->declare_parameter("target_distance", 4.0);
     this->declare_parameter("kp", 0.8);
     this->declare_parameter("ki", 0.1);
-    this->declare_parameter("kd", 0.05);
+    this->declare_parameter("kd", 0.0);
     this->declare_parameter("max_vel", 2.0);
     this->declare_parameter("min_vel", -2.0);
 
@@ -49,13 +49,26 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
     
     auto current_call_time = std::chrono::steady_clock::now();
     double dt = std::chrono::duration<double>( current_call_time - _last_call_time ).count();
+    double control_signal = 0.0;
     
-    _error = _target_alt - msg->dist_bottom ;
-    _integral += _error * dt;
-    double derivative = ( _error - _last_error ) / dt;
+    // Error Computation
+    _error = _target_alt - msg->dist_bottom;
     
-    double control_signal = _kp * _error + _ki * _integral; //+ _kd * derivative;
+    // Propotional
+    control_signal += _kp * _error; 
 
+    // Integral
+    if (std::abs(_error) < 0.5)
+    {
+        _integral += _error * dt;
+        control_signal += _ki * _integral;
+    }
+    
+    // Derivative
+    double derivative = ( _error - _last_error ) / dt;
+    control_signal+= _kd * derivative;
+
+    // Limiter
     if ( control_signal > _max_vel )
     {
         control_signal = _max_vel;
@@ -65,12 +78,10 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
         control_signal = _min_vel;
     }
 
-    cmd_vel_msg.linear.z = -control_signal;
+    cmd_vel_msg.linear.z = control_signal;
     _cmd_vel_pub->publish(cmd_vel_msg);
     _last_call_time = current_call_time;
     _last_error = _error;
-
-    RCLCPP_INFO(this->get_logger(), "Measure Dist.: %f, Error: %f, Controll Sig.: %f", msg->dist_bottom, _error, control_signal);
 }
 
 
