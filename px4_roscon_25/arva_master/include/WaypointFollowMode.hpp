@@ -35,11 +35,12 @@ class WaypointFollow : public px4_ros2::ModeBase {
 
     private:
         // Member Var
+        double _yaw_target;
         double _cmd_z_vel;
         rclcpp::Node &_node;
         px4_ros2::TrajectorySetpoint _setpoint;
-        std::vector<Eigen::Vector3f> _trajectory_waypoints; // Vector to hold waypoints
-        size_t _current_waypoint_index; // Index of the current waypoint     
+        std::vector<Eigen::Vector2f> _trajectory_waypoints; // Vector to hold waypoints
+        size_t _current_wp_idx; // Index of the current waypoint     
         std::shared_ptr<px4_ros2::TrajectorySetpointType> _trajectory_setpoint;
         std::shared_ptr<px4_ros2::OdometryLocalPosition> _local_position;
 
@@ -48,7 +49,8 @@ class WaypointFollow : public px4_ros2::ModeBase {
         
         // Methods
         void loadParameters();
-        bool checkIfReached(Eigen::Vector3f &current_waypoint) const;
+        bool checkIfReached() const;
+        void computeYaw();
 
         // Callbacks
         void terrainFollowCallback(const std::shared_ptr <const geometry_msgs::msg::Twist> &msg);

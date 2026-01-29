@@ -45,6 +45,7 @@ void TerrainFollowController::getParameters()
 
 void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg)
 {
+    // TODO: Set Kp accroring to V_xy max, check for mapping of distanct->velocity
     geometry_msgs::msg::Twist cmd_vel_msg;
     
     auto current_call_time = std::chrono::steady_clock::now();

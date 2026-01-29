@@ -1,7 +1,7 @@
 terrain_follow_controller:
   ros__parameters:
     target_distance: 1.25
-    kp: 2.25
+    kp: 2.75
     ki: 0.2
     kd: 0.05
     max_vel: 3.0
