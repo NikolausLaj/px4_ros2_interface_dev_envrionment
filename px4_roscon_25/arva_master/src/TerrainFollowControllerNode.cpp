@@ -24,11 +24,11 @@ TerrainFollowController::TerrainFollowController() : Node("terrain_follow_contro
 void TerrainFollowController::getParameters()
 {
     this->declare_parameter("target_distance", 4.0);
-    this->declare_parameter("kp", 0.8);
-    this->declare_parameter("ki", 0.1);
-    this->declare_parameter("kd", 0.0);
-    this->declare_parameter("max_vel", 2.0);
-    this->declare_parameter("min_vel", -2.0);
+    this->declare_parameter("kp", 2.250);
+    this->declare_parameter("ki", 0.2); // 0.1
+    this->declare_parameter("kd", 0.0); // 0.05
+    this->declare_parameter("max_vel", 3.0);
+    this->declare_parameter("min_vel", -3.0);
 
     _target_alt = this->get_parameter("target_distance").as_double();
     _kp = this->get_parameter("kp").as_double();
@@ -58,7 +58,7 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
     control_signal += _kp * _error; 
 
     // Integral
-    if (std::abs(_error) < 0.5)
+    if (std::abs(_error) < 1.0) // TODO create parameter
     {
         _integral += _error * dt;
         control_signal += _ki * _integral;
@@ -78,7 +78,7 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
         control_signal = _min_vel;
     }
 
-    cmd_vel_msg.linear.z = control_signal;
+    cmd_vel_msg.linear.z = -control_signal; // PX4 used NED Frame
     _cmd_vel_pub->publish(cmd_vel_msg);
     _last_call_time = current_call_time;
     _last_error = _error;

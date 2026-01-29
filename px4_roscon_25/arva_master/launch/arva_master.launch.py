@@ -48,7 +48,8 @@ def generate_launch_description():
             name="terrain_follow_controller",
             output="screen",
             parameters=[
-                {"use_sim_time": True}
+                {"use_sim_time": True},
+                os.path.join(pkg_share, "cfg", "terrain_follow.yaml")
             ]
         ),
         Node(
