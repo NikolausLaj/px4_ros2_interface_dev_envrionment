@@ -37,6 +37,7 @@ class WaypointFollow : public px4_ros2::ModeBase {
         // Member Var
         double _yaw_target;
         double _cmd_z_vel;
+        double _wp_tollerance;
         rclcpp::Node &_node;
         px4_ros2::TrajectorySetpoint _setpoint;
         std::vector<Eigen::Vector2f> _trajectory_waypoints; // Vector to hold waypoints
@@ -48,6 +49,7 @@ class WaypointFollow : public px4_ros2::ModeBase {
         rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr _terrain_cmd_vel;
         
         // Methods
+        void getParameters();
         void loadParameters();
         bool checkIfReached() const;
         void computeYaw();

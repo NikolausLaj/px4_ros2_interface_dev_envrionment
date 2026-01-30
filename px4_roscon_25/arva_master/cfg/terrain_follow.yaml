@@ -6,3 +6,5 @@ terrain_follow_controller:
     kd: 0.05
     max_vel: 3.0
     min_vel: -3.0
+    integrator_limit: 1.0
+    compensate_angle: false

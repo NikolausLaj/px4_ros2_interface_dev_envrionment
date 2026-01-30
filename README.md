@@ -112,3 +112,37 @@ At the end of the workshop, we provide dedicated time for questions, troubleshoo
 ### Open Lab & Individual Consultations
 
 Dedicated time for leftover exercises and individual consultation.
+
+
+
+// _trajectory_waypoints.push_back(Eigen::Vector2f(0.00f, 0.00f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-7.86f, 5.65f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-19.24f, 10.65f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-62.49f, 117.32f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-77.87f, 168.24f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-76.55f, 203.24f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-74.39f, 235.00f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-65.90f, 265.62f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-62.23f, 297.48f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-60.84f, 335.86f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-62.73f, 354.77f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-69.60f, 397.19f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-70.09f, 441.85f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-67.23f, 474.07f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-61.02f, 493.87f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-38.23f, 474.97f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(-21.55f, 460.43f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(28.30f, 446.74f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(60.23f, 429.77f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(85.62f, 398.18f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(101.85f, 367.64f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(131.19f, 346.02f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(169.86f, 334.74f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(197.99f, 332.13f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(194.95f, 308.29f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(181.91f, 283.74f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(171.71f, 262.37f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(150.02f, 218.11f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(125.95f, 171.54f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(60.06f, 37.91f));
+// _trajectory_waypoints.push_back(Eigen::Vector2f(30.14f, -20.31f));
