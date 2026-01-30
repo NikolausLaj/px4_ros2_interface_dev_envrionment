@@ -3,6 +3,8 @@
 #include <px4_msgs/msg/trajectory_setpoint.hpp>
 #include <px4_msgs/msg/vehicle_local_position.hpp>
 #include <px4_ros2/odometry/attitude.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Matrix3x3.h>
 
 
 class TerrainFollowController : public rclcpp::Node
@@ -18,14 +20,14 @@ class TerrainFollowController : public rclcpp::Node
         double _max_vel, _min_vel, _integrator_limit;
         double _last_error = 0.0;
         bool _compensate_angle;
-        std::array<float, 4> _q;
+        double _roll, _pitch, _yaw;
 
         std::chrono::steady_clock::time_point _last_call_time;
 
 
         // Methods
         void getParameters();
-        double angleCompensatin(const float measured_dist);
+        double compensateRollAndPitch(const float measured_dist);
 
         // Subscribers
         rclcpp::Subscription<px4_msgs::msg::VehicleLocalPosition>::SharedPtr _vehicle_local_position_sub;

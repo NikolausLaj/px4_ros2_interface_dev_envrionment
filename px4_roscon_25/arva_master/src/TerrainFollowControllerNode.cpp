@@ -30,12 +30,12 @@ void TerrainFollowController::getParameters()
 {
     this->declare_parameter("target_distance", 4.0);
     this->declare_parameter("kp", 2.250);
-    this->declare_parameter("ki", 0.2); // 0.1
-    this->declare_parameter("kd", 0.0); // 0.05
+    this->declare_parameter("ki", 0.2);
+    this->declare_parameter("kd", 0.0);
     this->declare_parameter("max_vel", 3.0);
     this->declare_parameter("min_vel", -3.0);
     this->declare_parameter("integrator_limit", 2.0);
-    this->declare_parameter("compensate_angel", false);
+    this->declare_parameter("compensate_angle", false);
 
     _target_alt = this->get_parameter("target_distance").as_double();
     _kp = this->get_parameter("kp").as_double();
@@ -62,7 +62,7 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
     double dt = std::chrono::duration<double>( current_call_time - _last_call_time ).count();
     double control_signal = 0.0;
     
-    double distance = angleCompensatin(msg->dist_bottom);
+    double distance = compensateRollAndPitch(msg->dist_bottom);
     _error = _target_alt - distance;
     
     // Create PID Function
@@ -99,20 +99,21 @@ void TerrainFollowController::vehicleLocalPositionCallback(const px4_msgs::msg::
 
 void TerrainFollowController::vehicleAttitudeCallback(const px4_msgs::msg::VehicleAttitude::SharedPtr msg)
 {
-    _q = msg->q;
+    tf2::Quaternion q(msg->q[1], msg->q[2], msg->q[3], msg->q[0]);
+    tf2::Matrix3x3 m(q);
+    m.getRPY(_roll, _pitch, _yaw);
 }
 
 
-double TerrainFollowController::angleCompensatin(const float measured_dist)
+double TerrainFollowController::compensateRollAndPitch(const float dist_measured)
 {
     if (_compensate_angle)
     {
-        return measured_dist;
+        double dist_corrected = dist_measured * std::cos(_roll) * std::cos(_pitch);
+        RCLCPP_INFO(this->get_logger(), "Difference %f", dist_measured-dist_corrected);
+        return dist_corrected;
     }
-    else
-    {
-        return measured_dist;
-    }
+    return dist_measured;
 }
 
 
