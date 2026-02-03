@@ -1,0 +1,5 @@
+python_node:
+  ros__parameters:
+    SERIAL_PORT = '/dev/ttyUSB0'
+    BAUDRATE = 115200
+    TIMEOUT = 1
