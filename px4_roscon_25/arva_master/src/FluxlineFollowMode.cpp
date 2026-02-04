@@ -36,7 +36,7 @@ void FluxlineFollow::loadParameters()
 
 void FluxlineFollow::updateSetpoint([[maybe_unused]] float dt_s)
 {
-    Eigen::Vector3f buffer = {0.0, 0.0, 0.0};
+    Eigen::Vector3f buffer = {0.0, 0.0, -5.0};
     _setpoint.withPosition(buffer);
         // .withVelocityX(_cmd_x_vel)
         // .withVelocityZ(_cmd_z_vel)

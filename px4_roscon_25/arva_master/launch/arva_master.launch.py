@@ -52,6 +52,15 @@ def generate_launch_description():
             ]
         ),
         Node(
+            package="arva_master",
+            executable="fluxline_follow_controller",
+            name="fluxline_follow_controller",
+            output="screen",
+            parameters=[
+                {"use_sim_time": True}
+            ]
+        ),
+        Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
             name="gz_clock_bridge",

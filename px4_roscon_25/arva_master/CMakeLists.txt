@@ -16,6 +16,8 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2 REQUIRED)
 
+find_package(pieps_interfacer REQUIRED)
+
 include_directories(${Eigen3_INCLUDE_DIRS})
 
 # Executable target
@@ -61,12 +63,37 @@ ament_target_dependencies(terrain_follow_controller
   tf2
 )
 
+add_executable(fluxline_follow_controller
+  src/FluxlineFollowControllerNode.cpp)
+
+target_include_directories(fluxline_follow_controller
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(fluxline_follow_controller
+  rclcpp
+  px4_ros2_cpp
+  Eigen3
+  geometry_msgs
+  tf2_ros
+  tf2
+  pieps_interfacer
+)
+
+
 # Install the binary
 install(TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
 
+
 install(TARGETS terrain_follow_controller
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS fluxline_follow_controller
   DESTINATION lib/${PROJECT_NAME}
 )
 
