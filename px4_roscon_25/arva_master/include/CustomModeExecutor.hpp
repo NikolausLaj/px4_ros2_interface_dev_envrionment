@@ -7,10 +7,12 @@
 #include <px4_ros2/components/node_with_mode.hpp>
 
 #include "WaypointFollowMode.hpp"
+#include "FluxlineFollowMode.hpp"
 
 class CustomModeExecutor : public px4_ros2::ModeExecutorBase {
     public:
-        CustomModeExecutor(rclcpp::Node &node, px4_ros2::ModeBase &owned_mode);
+        CustomModeExecutor(rclcpp::Node &node, px4_ros2::ModeBase &owned_mode,
+                       px4_ros2::ModeBase &second_mode);
 
         // See ModeExecutorBase
         void onActivate() override;
@@ -24,7 +26,8 @@ class CustomModeExecutor : public px4_ros2::ModeExecutorBase {
         // State management
         enum class State {
             Takeoff,           // Initial state, takeoff to a predefined altitude
-            CustomWaypoints,   // Custom waypoints mode
+            WaypointFollow,   // Custom waypoints mode
+            FluxlineFollow,
             Land,              // Land state
             WaitUntilDisarmed  // Final state, wait until the vehicle is disarmed
         };

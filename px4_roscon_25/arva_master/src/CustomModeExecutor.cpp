@@ -3,13 +3,13 @@
 // ============================================================================
 #include "CustomModeExecutor.hpp"
 
-using CustomModeWithExecutor = px4_ros2::NodeWithModeExecutor<CustomModeExecutor, WaypointFollow>;
+using CustomModeWithExecutor = px4_ros2::NodeWithModeExecutor<CustomModeExecutor, WaypointFollow, FluxlineFollow>;
 
 static const std::string kNodeName = "ARVA_Master";
 static const bool kEnableDebugOutput = true;
 
-CustomModeExecutor::CustomModeExecutor(rclcpp::Node &node, px4_ros2::ModeBase &owned_mode)
-    : ModeExecutorBase(node, Settings{}, owned_mode), _node(node), _second_mode(owned_mode) {}
+CustomModeExecutor::CustomModeExecutor(rclcpp::Node &node, px4_ros2::ModeBase &owned_mode, px4_ros2::ModeBase &second_mode)
+    : ModeExecutorBase(node, Settings{}, owned_mode), _node(node), _second_mode(second_mode) {}
 // ----------------------------------------------------------------------------
 
 void CustomModeExecutor::onActivate()
@@ -49,18 +49,23 @@ void CustomModeExecutor::switchToState(State state, px4_ros2::Result previous_re
             RCLCPP_WARN(_node.get_logger(), "Initiating takeoff...");
             takeoff(
                 [this](px4_ros2::Result result) {
-                    switchToState(State::CustomWaypoints, result);
+                    switchToState(State::WaypointFollow, result);
                 },
                 2.0f);
             break;
 
-        case State::CustomWaypoints:
+        case State::WaypointFollow:
+            scheduleMode(ownedMode().id(), [this](px4_ros2::Result result) {
+                // This callback triggers when the mode completes
+                switchToState(State::FluxlineFollow, result);
+            });
+            break;
+        case State::FluxlineFollow:
             scheduleMode(ownedMode().id(), [this](px4_ros2::Result result) {
                 // This callback triggers when the mode completes
                 switchToState(State::Land, result);
             });
             break;
-            
         case State::Land:
             land([this](px4_ros2::Result result) {
                 switchToState(State::WaitUntilDisarmed, result);

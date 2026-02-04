@@ -3,13 +3,12 @@
 #include <px4_ros2/components/node_with_mode.hpp>
 
 static const std::string kModeNameWaypointFollow = "WaypointFollow";
-static const std::string kModeNameCustomAltitude = "CustomAltitude";
 
 WaypointFollow::WaypointFollow(rclcpp::Node &node)
     : px4_ros2::ModeBase(node, kModeNameWaypointFollow),
       _node(node)
 {
-    loadParameters();
+    getParameters();
 
     _trajectory_setpoint = std::make_shared<px4_ros2::TrajectorySetpointType>(*this);
     _local_position = std::make_shared<px4_ros2::OdometryLocalPosition>(*this);
@@ -23,15 +22,8 @@ WaypointFollow::WaypointFollow(rclcpp::Node &node)
 }
 
 
-void WaypointFollow::loadParameters()
-{
-    // Load parameters specific to the WaypointFollow mode
-}
-
-
 void WaypointFollow::onActivate()
 {
-    getParameters();
     // TODO: Find a way how to get uploaded mission to companion computer
     // Initialize waypoints of Baylands
 

@@ -21,6 +21,7 @@ include_directories(${Eigen3_INCLUDE_DIRS})
 # Executable target
 add_executable(${PROJECT_NAME}
   src/WaypointFollowMode.cpp
+  src/FluxlineFollowMode.cpp
   src/CustomModeExecutor.cpp
 )
 

@@ -18,7 +18,7 @@
 #include <std_msgs/msg/bool.hpp>
 
 // C++ Std
-#include <cmath>  // for M_PI
+#include <cmath>
 #include <Eigen/Eigen>
 #include <chrono>
 
@@ -50,7 +50,6 @@ class WaypointFollow : public px4_ros2::ModeBase {
         
         // Methods
         void getParameters();
-        void loadParameters();
         bool checkIfReached() const;
         void computeYaw();
 
