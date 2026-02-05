@@ -10,9 +10,15 @@ class FluxlineFollowController : public rclcpp::Node
         FluxlineFollowController();
         ~FluxlineFollowController();
     private:
+        // Membervariables
+        // float error_angle_, integral_angle_;
+        // double dt_angle_;
+        // std::chrono::steady_clock::time_point _last_call_time;
+        
         // Methods
         float linearVelocityController(const float &dist_measure, const bool &dist_valid);
         float angularVelocityController(const float &angle_measure, const bool &angle_valid);
+        // void PID(const float measurement, const float target, float &error, float &output, float &integral, const float integral_limit, const double dt, const float kp, const float ki);
 
         // Subscribers
         rclcpp::Subscription<pieps_interfacer::msg::PiepsMeasurements>::SharedPtr pieps_sub_;

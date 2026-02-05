@@ -36,14 +36,44 @@ void FluxlineFollowController::piepsCallback(const pieps_interfacer::msg::PiepsM
 
 float FluxlineFollowController::linearVelocityController(const float &dist_measure, const bool &dist_valid)
 {
-    return 2.5;
+    return 0.0;
 }
 
 
 float FluxlineFollowController::angularVelocityController(const float &angle_measure, const bool &angle_valid)
 {
-    return 1.5;
+    // float integral_limit = 3.1415; // TODO Add to yaml file
+    // float ki = 0.1; // TODO Add to yaml file
+    float controll_signal = 0.0;
+    float kp = 0.7; // TODO Add to yaml file
+    float target = 0; // TODO Add to yaml file
+
+    if (angle_valid)
+    {
+        // auto current_call_time = std::chrono::steady_clock::now();
+        // dt_angle_ = std::chrono::duration<double>( current_call_time - _last_call_time ).count();
+        // PID(angle_measure, target, error_angle_, controll_signal, integral_angle_, integral_limit, dt_angle_, kp, ki);
+        // _last_call_time = current_call_time;
+        float error = target - angle_measure;
+        controll_signal = kp * error; 
+        return controll_signal;
+    }
+    return 0.0;
 }
+
+
+// void FluxlineFollowController::PID(const float measurement, const float target, float &error, float &output, float &integral, const float integral_limit, const double dt, const float kp, const float ki)
+// {
+//     error = target - measurement;
+//     output = kp * error; 
+
+//     // Integral
+//     if (std::abs(error) < integral_limit)
+//     {
+//         integral += error * dt;
+//         output += ki * integral;
+//     }
+// }
 
 
 int main(int argc, char * argv[])
