@@ -28,7 +28,7 @@ class FluxlineFollow : public px4_ros2::ModeBase {
         rclcpp::Node &_node;
         px4_ros2::TrajectorySetpoint _setpoint;
         std::shared_ptr<px4_ros2::TrajectorySetpointType> _trajectory_setpoint;
-        double _cmd_x_vel, _cmd_z_vel, _angular_vel;
+        double _cmd_x_vel, _cmd_z_vel, _cmd_yaw_vel = 0.0;
 
         // Methods
         void loadParameters();
@@ -39,5 +39,6 @@ class FluxlineFollow : public px4_ros2::ModeBase {
 
         // Callbacks
         void terrainFollowCallback(const std::shared_ptr <const geometry_msgs::msg::Twist> &msg);
+        void fluxlineFollowCallback(const std::shared_ptr <const geometry_msgs::msg::Twist> &msg);
 
 };

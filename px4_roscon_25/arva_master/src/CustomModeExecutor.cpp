@@ -61,7 +61,7 @@ void CustomModeExecutor::switchToState(State state, px4_ros2::Result previous_re
             });
             break;
         case State::FluxlineFollow:
-            scheduleMode(ownedMode().id(), [this](px4_ros2::Result result) {
+            scheduleMode(_second_mode.id(), [this](px4_ros2::Result result) {
                 // This callback triggers when the mode completes
                 switchToState(State::Land, result);
             });
