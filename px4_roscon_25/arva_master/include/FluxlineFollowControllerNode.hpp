@@ -6,23 +6,31 @@
 
 #include "pieps_interfacer/msg/pieps_measurements.hpp"
 
+struct PlanarVelocity
+{
+    float x;
+    float y;
+};
 
 class FluxlineFollowController : public rclcpp::Node
 {
     public:
         FluxlineFollowController();
         ~FluxlineFollowController();
+        
     private:
         float last_error_angle_ = 0.0;
         double kp_angle_, kd_angle_, target_angle_, angular_vel_limit_;
         std::chrono::steady_clock::time_point last_call_angle_;
-
+        
         float heading_;
         bool heading_valid_;
+        double kp_lin_, ki_lin_, kd_lin_, target_lin_, lin_vel_limit_;
+        std::chrono::steady_clock::time_point last_call_lin_;
 
         // Methods
         void loadParameters();
-        float linearVelocityController(const float &dist_measure, const bool &dist_valid);
+        PlanarVelocity linearVelocityController(const float &dist_measure, const bool &dist_valid);
         float angularVelocityController(const float &angle_measure, const bool &angle_valid);
         float timeDiff(std::chrono::steady_clock::time_point &last_call);
         void limiter(float &value, const float limit);

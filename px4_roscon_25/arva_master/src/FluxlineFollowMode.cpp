@@ -43,7 +43,7 @@ void FluxlineFollow::updateSetpoint([[maybe_unused]] float dt_s)
 {
     _setpoint = px4_ros2::TrajectorySetpoint();  // Reset setpoint
     _setpoint.withVelocityX(_cmd_x_vel)
-        .withVelocityY(0.0f)
+        .withVelocityY(_cmd_y_vel)
         .withVelocityZ(_cmd_z_vel)
         .withYawRate(_cmd_yaw_vel);
     
@@ -59,5 +59,6 @@ void FluxlineFollow::terrainFollowCallback(const std::shared_ptr<const geometry_
 void FluxlineFollow::fluxlineFollowCallback(const std::shared_ptr <const geometry_msgs::msg::Twist> &msg)
 {
     _cmd_x_vel = msg->linear.x;
+    _cmd_y_vel = msg->linear.y;
     _cmd_yaw_vel = msg->angular.z;
 }
