@@ -1,5 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include <px4_msgs/msg/vehicle_local_position.hpp>
+
 #include <cmath>
 
 #include "pieps_interfacer/msg/pieps_measurements.hpp"
@@ -15,6 +17,9 @@ class FluxlineFollowController : public rclcpp::Node
         double kp_angle_, kd_angle_, target_angle_, angular_vel_limit_;
         std::chrono::steady_clock::time_point last_call_angle_;
 
+        float heading_;
+        bool heading_valid_;
+
         // Methods
         void loadParameters();
         float linearVelocityController(const float &dist_measure, const bool &dist_valid);
@@ -24,10 +29,14 @@ class FluxlineFollowController : public rclcpp::Node
 
         // Subscribers
         rclcpp::Subscription<pieps_interfacer::msg::PiepsMeasurements>::SharedPtr pieps_sub_;
-        void piepsCallback(const pieps_interfacer::msg::PiepsMeasurements &msg);
+        rclcpp::Subscription<px4_msgs::msg::VehicleLocalPosition>::SharedPtr vehicle_local_position_sub_;
 
+        // Callbacks
+        void piepsCallback(const pieps_interfacer::msg::PiepsMeasurements &msg);
+        void vehicleLocalPositionCallback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg);
+        
         // Publishers
-        rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr _cmd_vel_pub;
+        rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
 
 };
 

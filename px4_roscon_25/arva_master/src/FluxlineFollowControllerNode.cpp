@@ -10,8 +10,12 @@ FluxlineFollowController::FluxlineFollowController() : Node("fluxline_follow_con
     pieps_sub_ = this->create_subscription<pieps_interfacer::msg::PiepsMeasurements>(
         "/pieps/measurement", 10, std::bind(&FluxlineFollowController::piepsCallback, this, _1));
 
+    vehicle_local_position_sub_ = this->create_subscription<px4_msgs::msg::VehicleLocalPosition>(
+        "/fmu/out/vehicle_local_position", rclcpp::QoS(1).best_effort(),
+        std::bind(&FluxlineFollowController::vehicleLocalPositionCallback, this, std::placeholders::_1));
+
     // Init Pubs
-    _cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>(
+    cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
         "/fluxline_controller/cmd_vel", 10);
 }
 
@@ -41,7 +45,7 @@ void FluxlineFollowController::loadParameters()
 }
 
 
-void FluxlineFollowController::piepsCallback(const pieps_interfacer::msg::PiepsMeasurements &msg)
+void FluxlineFollowController::piepsCallback( const pieps_interfacer::msg::PiepsMeasurements &msg )
 {
     geometry_msgs::msg::Twist cmd_vel_msg;
     float linar_vel = linearVelocityController(msg.distance, msg.distance_valid);
@@ -49,18 +53,24 @@ void FluxlineFollowController::piepsCallback(const pieps_interfacer::msg::PiepsM
     
     cmd_vel_msg.linear.x = linar_vel;
     cmd_vel_msg.angular.z = angular_vel;
-    _cmd_vel_pub->publish(cmd_vel_msg);
-    
+    cmd_vel_pub_->publish(cmd_vel_msg);   
+}
+
+void FluxlineFollowController::vehicleLocalPositionCallback( const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg )
+{
+    heading_ = msg->heading;
+    heading_valid_ = msg->heading_good_for_control; // TODO use this for safty measures in Controllers
 }
 
 
-float FluxlineFollowController::linearVelocityController(const float &dist_measure, const bool &dist_valid)
+float FluxlineFollowController::linearVelocityController( const float &dist_measure, const bool &dist_valid )
 {
+    RCLCPP_INFO(this->get_logger(), "Heading %f, Valid %s", heading_, heading_valid_ ? "true" : "false");
     return 0.0;
 }
 
 
-float FluxlineFollowController::angularVelocityController(const float &angle_measure, const bool &angle_valid)
+float FluxlineFollowController::angularVelocityController( const float &angle_measure, const bool &angle_valid )
 {
     float controll_signal = 0.0;
 
@@ -76,7 +86,7 @@ float FluxlineFollowController::angularVelocityController(const float &angle_mea
     return 0.0;
 }
 
-float FluxlineFollowController::timeDiff(std::chrono::steady_clock::time_point &last_call)
+float FluxlineFollowController::timeDiff( std::chrono::steady_clock::time_point &last_call )
 {
     auto current_call_time = std::chrono::steady_clock::now();
     double dt = std::chrono::duration<double>( current_call_time - last_call ).count();
@@ -84,16 +94,18 @@ float FluxlineFollowController::timeDiff(std::chrono::steady_clock::time_point &
     return dt;
 }
 
-void FluxlineFollowController::limiter(float &value, const float limit)
+
+void FluxlineFollowController::limiter( float &value, const float limit )
 {
-    if ( std::abs(value) > limit )
+    if ( std::abs( value ) > limit )
     {
         float sign = std::copysign(1.0f, value); // 1.0 or -1.0
         value = sign * limit;
     }
 }
 
-int main(int argc, char * argv[])
+
+int main( int argc, char * argv[] )
 {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<FluxlineFollowController>();
