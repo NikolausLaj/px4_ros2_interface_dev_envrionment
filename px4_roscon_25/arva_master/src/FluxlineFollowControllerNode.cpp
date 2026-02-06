@@ -2,12 +2,13 @@
 
 using std::placeholders::_1;
 
-FluxlineFollowController::FluxlineFollowController() : Node("fluxline_follow_controller_node")
+FluxlineFollowController::FluxlineFollowController() : Node("fluxline_follow_controller")
 {
+    loadParameters();
+
     // Init Subs
     pieps_sub_ = this->create_subscription<pieps_interfacer::msg::PiepsMeasurements>(
-        "/pieps/measurement", 10, std::bind(&FluxlineFollowController::piepsCallback, this, _1) 
-    );
+        "/pieps/measurement", 10, std::bind(&FluxlineFollowController::piepsCallback, this, _1));
 
     // Init Pubs
     _cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>(
@@ -18,6 +19,25 @@ FluxlineFollowController::FluxlineFollowController() : Node("fluxline_follow_con
 FluxlineFollowController::~FluxlineFollowController()
 {
     
+}
+
+
+void FluxlineFollowController::loadParameters()
+{
+    this->declare_parameter("angular_controller.kp", 0.7);
+    this->declare_parameter("angular_controller.kd", 0.05);
+    this->declare_parameter("angular_controller.target_value", 0.0);
+    this->declare_parameter("angular_controller.angular_velocity_limit", 0.5);
+    
+    kp_angle_ = this->get_parameter("angular_controller.kp").as_double();
+    kd_angle_ = this->get_parameter("angular_controller.kd").as_double();
+    target_angle_ = this->get_parameter("angular_controller.target_value").as_double();
+    angular_vel_limit_ = this->get_parameter("angular_controller.angular_velocity_limit").as_double();
+
+    RCLCPP_INFO(this->get_logger(), "\nAngular Controller Parameters Loaded:\n - Target Val.: %f [rad]\n - PD Values: Kp = %f, Kd = %f\n - Ang.-Vel.-Limit: %f [rad/s]\n",
+                target_angle_, kp_angle_, kd_angle_, angular_vel_limit_);
+
+
 }
 
 
@@ -42,39 +62,36 @@ float FluxlineFollowController::linearVelocityController(const float &dist_measu
 
 float FluxlineFollowController::angularVelocityController(const float &angle_measure, const bool &angle_valid)
 {
-    // float integral_limit = 3.1415; // TODO Add to yaml file
-    // float ki = 0.1; // TODO Add to yaml file
     float controll_signal = 0.0;
-    float kp = 0.7; // TODO Add to yaml file
-    float target = 0; // TODO Add to yaml file
 
     if (angle_valid)
-    {
-        // auto current_call_time = std::chrono::steady_clock::now();
-        // dt_angle_ = std::chrono::duration<double>( current_call_time - _last_call_time ).count();
-        // PID(angle_measure, target, error_angle_, controll_signal, integral_angle_, integral_limit, dt_angle_, kp, ki);
-        // _last_call_time = current_call_time;
-        float error = target - angle_measure;
-        controll_signal = kp * error; 
+    { // PD-Controller to correct drone angle
+        double dt = timeDiff(last_call_angle_);
+        float error = target_angle_ - angle_measure;
+        float derivate = (error - last_error_angle_) / dt;
+        controll_signal = kp_angle_ * error + kd_angle_ * derivate;
+        limiter(controll_signal, angular_vel_limit_);
         return controll_signal;
     }
     return 0.0;
 }
 
+float FluxlineFollowController::timeDiff(std::chrono::steady_clock::time_point &last_call)
+{
+    auto current_call_time = std::chrono::steady_clock::now();
+    double dt = std::chrono::duration<double>( current_call_time - last_call ).count();
+    last_call = current_call_time;
+    return dt;
+}
 
-// void FluxlineFollowController::PID(const float measurement, const float target, float &error, float &output, float &integral, const float integral_limit, const double dt, const float kp, const float ki)
-// {
-//     error = target - measurement;
-//     output = kp * error; 
-
-//     // Integral
-//     if (std::abs(error) < integral_limit)
-//     {
-//         integral += error * dt;
-//         output += ki * integral;
-//     }
-// }
-
+void FluxlineFollowController::limiter(float &value, const float limit)
+{
+    if ( std::abs(value) > limit )
+    {
+        float sign = std::copysign(1.0f, value); // 1.0 or -1.0
+        value = sign * limit;
+    }
+}
 
 int main(int argc, char * argv[])
 {

@@ -48,7 +48,6 @@ void FluxlineFollow::updateSetpoint([[maybe_unused]] float dt_s)
         .withYawRate(_cmd_yaw_vel);
     
     _trajectory_setpoint->update(_setpoint);
-    RCLCPP_INFO(_node.get_logger(), "Send Setpoint: vx=%f, vz=%f, yaw_rate=%f", _cmd_x_vel, _cmd_z_vel, _cmd_yaw_vel);
 }
 
 

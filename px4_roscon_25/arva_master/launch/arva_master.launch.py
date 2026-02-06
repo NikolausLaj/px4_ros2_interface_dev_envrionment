@@ -57,7 +57,8 @@ def generate_launch_description():
             name="fluxline_follow_controller",
             output="screen",
             parameters=[
-                {"use_sim_time": True}
+                {"use_sim_time": True},
+                os.path.join(pkg_share, "cfg", "fluxline_follow.yaml")
             ]
         ),
         Node(
