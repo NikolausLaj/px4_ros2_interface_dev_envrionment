@@ -1,1 +1,0 @@
-/fmu/out/vehicle_local_position
