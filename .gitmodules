@@ -1,0 +1,3 @@
+[submodule "px4_roscon_25/arva_master"]
+	path = px4_roscon_25/arva_master
+	url = https://github.com/NikolausLaj/arva_master.git
