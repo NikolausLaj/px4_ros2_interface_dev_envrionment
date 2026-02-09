@@ -4,6 +4,7 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPo
 from px4_msgs.msg import VehicleLocalPosition, VehicleAttitude
 from pieps_interfacer.msg import PiepsMeasurements
 import numpy as np
+import math
 
 class ArvaSim(Node):
     def __init__(self):
@@ -53,7 +54,7 @@ class ArvaSim(Node):
     def spawnTransmitter(self):
         # TODO hardcoded for now. Use searchfield coords to randomly init location
         # Transmitter position in NED frame
-        self._tx_pos = np.array([10.0, 5.0, 0.0])  # 10m North, 5m East, on ground
+        self._tx_pos = np.array([10.0, 10.0, 0.0])  # 10m North, 5m East, on ground
         self._tx_quat = None  # Default orientation (dipole along X)
         self.get_logger().info(f'Transmitter spawned at: {self._tx_pos}')
         
@@ -75,10 +76,13 @@ class ArvaSim(Node):
             
         distance, delta = self.computeArvaSignal()
         
+        # Apply quantization mapping
+        distance, delta_quantized = self.mapMeasuremntToPiepsMsgs(distance, delta)
+        
         if distance >= 0:
             msg = PiepsMeasurements()
             msg.distance = float(distance)
-            msg.angle = float(delta)
+            msg.angle = float(delta_quantized)
             
             if distance > 2.0:
                 msg.angle_valid = True
@@ -92,11 +96,29 @@ class ArvaSim(Node):
                 
             self._arva_pub.publish(msg)
             
-            self.get_logger().info(
-                f'ARVA Signal - Distance: {distance:.2f}m, Angle: {delta:.1f} rad'
-            )
         else:
             self.get_logger().info('ARVA Signal - Out of range')
+        
+    def mapMeasuremntToPiepsMsgs(self, distance, delta):
+        """Quantize the continuous angle measurement to discrete levels."""
+        angle_deg = math.degrees(delta)
+        
+        # Quantize to ceiling threshold levels
+        thresholds = [20, 30, 40, 50, 60]
+        abs_angle = abs(angle_deg)
+        
+        # Find the ceiling threshold
+        quantized_abs = 60  # Default to max
+        for threshold in thresholds:
+            if abs_angle < threshold:
+                quantized_abs = threshold
+                break
+        
+        # Apply sign
+        quantized_deg = quantized_abs if angle_deg >= 0 else -quantized_abs
+        quantized_rad = math.radians(quantized_deg)
+        
+        return distance, quantized_rad
         
         
     def computeArvaSignal(self):
@@ -143,7 +165,7 @@ class ArvaSim(Node):
         # Range logic from original code
         r_noise = 50.0  # max detection range in meters
         
-        if d3 <= 3.0:
+        if d3 <= 2.0:
             distance = d3
             delta = 0.0
         elif d1 <= r_noise:
@@ -154,6 +176,7 @@ class ArvaSim(Node):
             delta = 0.0
         
         return distance, delta
+        
         
     def quaternion2RotationMatrix(self, q):
         """Convert quaternion [x, y, z, w] to 3x3 rotation matrix."""
