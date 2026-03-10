@@ -90,12 +90,13 @@ class ArvaSim(Node):
             msg.distance = float(distance)
             msg.angle = float(delta)  # radians
 
-            msg.angle_valid = bool(distance > 7.0)      # angle not valid within 2 m radius # TODO nomaly 2m, add to parameters
+            msg.angle_valid = bool(distance > 4.0)      # angle not valid within 2 m radius # TODO nomaly 2m, add to parameters
             msg.distance_valid = bool(distance > 0.0)   # valid as long as signal is present
 
             self._arva_pub.publish(msg)
-        else:
-            self.get_logger().info(f'ARVA Signal - Out of range with {distance:.2f} m')
+            # self.get_logger().info(f'ARVA Signal - Distance: {distance:.2f} [m], Angle: {delta:.2f} rad')
+        # else:
+            # self.get_logger().info(f'ARVA Signal - Out of range with {distance:.2f} m')
 
 
     def computeArvaSignal(self):
