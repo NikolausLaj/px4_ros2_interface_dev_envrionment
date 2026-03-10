@@ -51,9 +51,9 @@ class ArvaSim(Node):
         # TODO hardcoded for now. Use searchfield coords to randomly init location
         # Transmitter position in NED frame: [North, East, Down]
         # Here: 20 m East of the origin (same NED frame as PX4 local position)
-        self._tx_pos = np.array([10.0, 30.0, 0.0])
+        self._tx_pos = np.array([10.0, 30.0, 0.0]) #TODO Create Parameter to set transmitter position
         m_vec = np.array([0.0, 1.0, 0.0])
-        self._tx_theta = np.radians(-90.0)
+        self._tx_theta = np.radians(-90.0) #TODO Create Parameter to set transmitter orientation
         
         # Yaw rotation about +Down axis in NED (clockwise-positive heading convention)
         R_tx = np.array([
@@ -88,24 +88,14 @@ class ArvaSim(Node):
         if distance >= 0:
             msg = PiepsMeasurements()
             msg.distance = float(distance)
-            msg.angle = float(math.degrees(delta))
+            msg.angle = float(delta)  # radians
 
-            if distance > 2.0:
-                msg.angle_valid = True
-            else:
-                msg.angle_valid = False
-
-            if distance > 0.0:
-                msg.distance_valid = True
-            else:
-                msg.distance_valid = False
+            msg.angle_valid = bool(distance > 7.0)      # angle not valid within 2 m radius # TODO nomaly 2m, add to parameters
+            msg.distance_valid = bool(distance > 0.0)   # valid as long as signal is present
 
             self._arva_pub.publish(msg)
-            # self.get_logger().info(f'Published ARVA Signal  - Distance: {distance:.2f} m, Angle: {math.degrees(delta):.2f} deg')
-
         else:
             self.get_logger().info(f'ARVA Signal - Out of range with {distance:.2f} m')
-
 
 
     def computeArvaSignal(self):
