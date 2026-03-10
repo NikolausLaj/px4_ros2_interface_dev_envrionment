@@ -51,7 +51,7 @@ class ArvaSim(Node):
         # TODO hardcoded for now. Use searchfield coords to randomly init location
         # Transmitter position in NED frame: [North, East, Down]
         # Here: 20 m East of the origin (same NED frame as PX4 local position)
-        self._tx_pos = np.array([0.0, 30.0, 0.0])
+        self._tx_pos = np.array([10.0, 30.0, 0.0])
         m_vec = np.array([0.0, 1.0, 0.0])
         self._tx_theta = np.radians(-90.0)
         
@@ -84,7 +84,7 @@ class ArvaSim(Node):
         distance, delta = self.computeArvaSignal()
 
         # Apply quantization mapping
-        # distance, delta_quantized = self.mapMeasuremntToPiepsMsgs(distance, delta)
+        distance, delta = self.mapMeasuremntToPiepsMsgs(distance, delta)
         if distance >= 0:
             msg = PiepsMeasurements()
             msg.distance = float(distance)
@@ -130,15 +130,26 @@ class ArvaSim(Node):
 
         d1 = (constant / abs(H_strength[0])) ** (1/3) if abs(H_strength[0]) > 1e-12 else -1
 
-        r_noise = 100.0  # max detection range in meters
+        r_noise = 15.00  # TODO make parameter. max detection range in meters
 
         if d3 <= 2.0:
             distance = d3
             delta = 0.0
         elif d1 <= r_noise:
             distance = d1
-            # delta = H_dir - self._drone_heading  # Compensate for NED frame and heading convention
-            delta = self._drone_heading - H_dir  # Compensate for NED frame and heading convention
+            # Flux lines are undirected: choose the field direction (or its anti-parallel)
+            # that points into the same half-plane as the vector toward the transmitter.
+            # This prevents the drone from following the flux line *away* from the beacon.
+            to_tx_h = self._tx_pos[:2] - self._drone_pos[:2]  # [North, East] toward transmitter
+            H_h = np.array([H_strength[0], H_strength[1]])     # horizontal field vector
+            if np.dot(H_h, to_tx_h) < 0:
+                H_dir_corrected = H_dir + np.pi
+            else:
+                H_dir_corrected = H_dir
+
+            delta = self._drone_heading - H_dir_corrected
+            # Normalize to [-pi, pi]
+            delta = (delta + np.pi) % (2 * np.pi) - np.pi
         else:
             distance = -1
             delta = 0.0
