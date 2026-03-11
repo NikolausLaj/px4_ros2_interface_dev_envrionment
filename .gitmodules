@@ -1,3 +1,7 @@
 [submodule "px4_roscon_25/arva_master"]
 	path = px4_roscon_25/arva_master
 	url = https://github.com/NikolausLaj/arva_master.git
+
+[submodule "px4_roscon_25/pieps_interfacer"]
+	path = px4_roscon_25/pieps_interfacer
+	url = https://github.com/NikolausLaj/pieps_interfacer.git
