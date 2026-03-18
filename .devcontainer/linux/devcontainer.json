@@ -19,7 +19,21 @@
         "vscode": {
             "settings": {
                 "terminal.integrated.defaultProfile.linux": "bash"
-            }
+            },
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cmake-tools",
+                "ms-python.python",
+                "ms-python.pylint",
+                // "ms-python.black-formatter",
+                "ms-iot.vscode-ros",
+                "smilerobotics.urdf",
+                "zachflower.uncrustify",
+                "redhat.vscode-yaml",
+                "gruntfuggly.todo-tree",
+                "cschlosser.doxdocgen"
+            ]
         }
     },
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop,type=bind",
