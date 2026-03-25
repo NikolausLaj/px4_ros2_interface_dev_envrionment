@@ -27,6 +27,8 @@ Teleop::Teleop(rclcpp::Node& node)
           RCLCPP_INFO(_node.get_logger(), "Teleop active: %s", _teleop_active ? "true" : "false");
         });
 }
+
+
 void Teleop::loadParameters()
 {
     _node.declare_parameter<double>("teleop_duration", 60.0);  
@@ -43,6 +45,7 @@ void Teleop::loadParameters()
     _teleop_duration = std::chrono::duration<double>(duration_sec);
 }
 
+
 void Teleop::onActivate()
 {
     _last_twist_time = _clock->now();
@@ -50,10 +53,12 @@ void Teleop::onActivate()
     RCLCPP_INFO(_node.get_logger(), "Teleop mode activated");
 }
 
+
 void Teleop::onDeactivate()
 {
     RCLCPP_INFO(_node.get_logger(), "Teleop mode deactivated");
 }
+
 
 void Teleop::updateSetpoint([[maybe_unused]] float dt_s)
 {
@@ -76,6 +81,7 @@ void Teleop::updateSetpoint([[maybe_unused]] float dt_s)
         // ENU: x=forward, y=left, z=up → NED: x=forward, y=right, z=down
         const geometry_msgs::msg::Twist &twist = _last_twist;
         float yaw = _vehicle_attitude->yaw(); // Get current yaw from attitude
+        
         // Convert to NED frame
         Eigen::Vector3f velocity_body;
         velocity_body.x() = twist.linear.x;
