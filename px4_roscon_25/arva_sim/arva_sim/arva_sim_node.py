@@ -51,7 +51,7 @@ class ArvaSim(Node):
         # TODO hardcoded for now. Use searchfield coords to randomly init location
         # Transmitter position in NED frame: [North, East, Down]
         # Here: 20 m East of the origin (same NED frame as PX4 local position)
-        self._tx_pos = np.array([30.0, 20.0, 0.0]) #TODO Create Parameter to set transmitter position
+        self._tx_pos = np.array([30.0, 10.0, 0.0]) #TODO Create Parameter to set transmitter position
         m_vec = np.array([0.0, 1.0, 0.0])
         self._tx_theta = np.radians(-90.0) #TODO Create Parameter to set transmitter orientation
         
