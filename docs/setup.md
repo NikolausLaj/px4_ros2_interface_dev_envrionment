@@ -2,7 +2,7 @@
 
 This page will guide you through the installation of the requirements for running the workshop exercises and it will explain how ROS 2, Gazebo and PX4 will interact.
 
-The images contains all the required dependencies for the workshop, in particular:
+The image contains all the required dependencies for the workshop, in particular:
 
 - [GZ HARMONIC](https://gazebosim.org/docs/harmonic/getstarted/)
 - [ROS 2 Humble](https://docs.ros.org/en/humble/index.html)
@@ -12,15 +12,22 @@ To further simplify working in the container, VSCode [devcontainers](https://cod
 
 ## Prerequisites
 
-All the instructions and all the provided scripts have been tested on Ubuntu 22.04, Ubuntu 24.04 and WSL2.
-Docker development in macOS is not supported.
+The container supports Linux hosts (Ubuntu and WSL2) and macOS hosts using Docker Desktop. Both AMD64 and ARM64 images are available, so Apple silicon Macs can run the ARM64 image without emulation.
 
-- **Docker**. The easiest way to start using and testing the ROS 2 packages made for this workshop is through the available AMD64 and ARM64 [Docker](https://www.docker.com/) containers.
+Host support differs only in how graphical applications are run:
+
+| Host | Gazebo | QGroundControl | Launcher mode |
+| --- | --- | --- | --- |
+| macOS | Headless in the container | Native macOS application | Automatic headless mode |
+| Ubuntu without NVIDIA | X11 in the container, or headless | Container or host | `./docker/docker_run.sh` |
+| Ubuntu with NVIDIA | X11 in the container | Container or host | `./docker/docker_run.sh --nvidia` |
+
+- **Docker**. Install Docker Engine on Ubuntu or [Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/) on macOS. The easiest way to start using and testing the ROS 2 packages made for this workshop is through the available AMD64 and ARM64 containers.
 For this reason, the rest of the document will assume that Docker is used.
 - **QGroundControl**. [GQC](https://qgroundcontrol.com/) provides intuitive operator control of PX4 drones, it lets you configure PX4, calibrate the drone sensors and plan mission.
-QGC is already installed in the Docker images.
-However, it requires GUI to enabled for the container.
-If this is not possible (currently for MAC) then QGC will have to be installed on the host system.
+QGC is installed in the AMD64 Docker image.
+However, GUI mode must be enabled to run it in the container.
+On macOS, [install QGroundControl on the host](https://docs.qgroundcontrol.com/en/getting_started/download_and_install.html) because the container runs headless.
 - **Foxglove**. [Foxglove](https://foxglove.dev/download) will make visualizing the drone state and perceived environment a more user friendly way.
 
 Prerequisites installation instructions are available in [docs/prerequisites.md](./prerequisites.md).
@@ -29,6 +36,18 @@ Once Docker is installed you can verify the installation by pulling the latest w
 
 ```sh
 docker pull dronecode/roscon-25-workshop:latest
+```
+
+If you cloned the repository without its submodules, initialize them before building or working on the custom packages:
+
+```sh
+git submodule update --init --recursive
+```
+
+To build the image locally for the host's native architecture, run:
+
+```sh
+./docker/docker_build.sh
 ```
 
 ## Container structure
@@ -74,7 +93,7 @@ There are two ways to start and interact w through VSCode DevContainers or with 
 This mode does not require VSCode.
 On the other hand it is slightly less user friendly as you'll have to open multiple terminals inside the container.
 
-You can use
+You can use:
 
 ```sh
 ./docker/docker_run.sh
@@ -85,13 +104,17 @@ The script will:
 - Start the container giving it the name _px4-roscon-25_ and attach a shell to it.
 - Forward port `8765` to simplify Foxglove client connection.
 - Mount the repository in `/home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop`
-- Forward X11 to run GUI applications (GZ client, QGC) from inside the container.
+- On Linux, forward X11 to run GUI applications (GZ client, QGC) from inside the container.
+- On macOS, select headless mode automatically and publish UDP port `18570` for native QGroundControl.
 
-You can use also use two options:
+The launcher also supports these options:
 
-- `--no-gui` to disable GUI in the container.
+- `--no-gui` to disable GUI in the container on any host.
 This option also forwards port `18570` to allow external (Host) QGC connection.
 - `--nvidia` to run the container with the `nvidia` runtime (it requires the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) installed on the host).
+- `--gui` to explicitly request Linux X11 mode. Container GUI forwarding is not supported on macOS.
+
+On macOS, use either the **macOS** or **no GUI** Dev Container configuration. Both explicitly publish the required UDP port.
 
 When using this method you can attach new shell to your container by running
 
@@ -123,7 +146,14 @@ From there you can start a GZ simulation with a PX4 compatible world:
 python3 /home/ubuntu/PX4-gazebo-models/simulation-gazebo --model_store /home/ubuntu/PX4-gazebo-models/ --world default
 ```
 
-- If you want to run the gz server in headless mode, add the option `--headless`.
+- If you want to run the gz server in headless mode, add the option `--headless`. This option is required on macOS:
+
+    ```sh
+    python3 /home/ubuntu/PX4-gazebo-models/simulation-gazebo \
+        --model_store /home/ubuntu/PX4-gazebo-models/ \
+        --world default \
+        --headless
+    ```
 - If you want to change the world, then change the argument of `--world`.
 
 Note that `--headless` is mandatory when running without GUI.
@@ -235,7 +265,7 @@ If you started you container with the GUI, then you can simply run
 /home/ubuntu/QGroundControl/qgroundcontrol
 ```
 
-If instead you don't have GUI in your container, then you can still run QGC on the host and attach it to the simulated PX4 instance.
+If instead you don't have GUI in your container (including on macOS), run QGC on the host and attach it to the simulated PX4 instance.
 
 To do so, first [install QGC](https://docs.qgroundcontrol.com/Stable_V5.0/en/qgc-user-guide/getting_started/download_and_install.html), then start it and create a custom UDP connection link by setting the server ip to `127.0.0.1` and the port to `18570`.
 

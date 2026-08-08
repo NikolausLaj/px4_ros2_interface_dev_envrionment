@@ -1,5 +1,19 @@
 # Prerequisites installation
 
+## System setup on macOS
+
+1. Install and start [Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/). Docker Desktop automatically uses the matching AMD64 or ARM64 image from the workshop's multi-architecture image.
+2. Verify Docker Desktop from a terminal:
+
+    ```sh
+    docker run --rm hello-world
+    ```
+
+3. Install the native macOS build of [QGroundControl](https://docs.qgroundcontrol.com/en/getting_started/download_and_install.html). The workshop container runs Gazebo headless on macOS and publishes PX4's UDP port `18570` to this host application.
+4. Optionally install the native [Foxglove](https://foxglove.dev/download) application. The launcher publishes TCP port `8765` for its bridge connection.
+
+No XQuartz setup is required or supported by the launcher.
+
 ## System setup on WSL2
 
 On W11 WSL2 you can either install Docker desktop on W11 or docker engine directly on WSL, these instructions follow the second approach.

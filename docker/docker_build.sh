@@ -1,4 +1,10 @@
-SCRIPT=$(realpath "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
+#!/usr/bin/env bash
+set -euo pipefail
 
-docker build -t dronecode/roscon-25-workshop -f ${SCRIPTPATH}/Dockerfile  ${SCRIPTPATH}/..
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+REPOSITORY_DIR=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+
+docker build \
+    --tag dronecode/roscon-25-workshop:latest \
+    --file "${SCRIPT_DIR}/Dockerfile" \
+    "${REPOSITORY_DIR}"

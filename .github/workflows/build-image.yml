@@ -25,6 +25,8 @@ jobs:
       - uses: runs-on/action@v1
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Login to Docker Hub
         if: github.event_name == 'push'
@@ -88,4 +90,3 @@ jobs:
           docker manifest annotate dronecode/roscon-25-workshop:latest dronecode/roscon-25-workshop:latest-amd64 --arch amd64
 
           docker manifest push dronecode/roscon-25-workshop:latest
-
