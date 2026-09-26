@@ -6,7 +6,8 @@
         "DISPLAY": "${localEnv:DISPLAY}"
     },
     "runArgs": [
-        "--device", "/dev/dri:/dev/dri"
+        "--device", "/dev/dri:/dev/dri",
+        "--publish", "18570:18570/udp"
     ],
     "mounts": [
         {

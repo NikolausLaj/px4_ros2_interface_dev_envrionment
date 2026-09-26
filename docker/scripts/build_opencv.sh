@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
 
 CMAKE_FLAGS=" \
    -DCPACK_BINARY_DEB=ON \
@@ -19,6 +19,12 @@ CMAKE_FLAGS=" \
    -DBUILD_TESTS=OFF"
 
 OPENCV_VERSION=$1
+BUILD_JOBS=${2:-2}
+
+if ! [[ "${BUILD_JOBS}" =~ ^[1-9][0-9]*$ ]]; then
+    echo "BUILD_JOBS must be a positive integer, got: ${BUILD_JOBS}" >&2
+    exit 1
+fi
 
 mkdir /OpenCV && cd /OpenCV &&
 
@@ -26,5 +32,5 @@ git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv.
 git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv_contrib.git
 
 cmake -S opencv -B build ${CMAKE_FLAGS} && \
-cmake --build build --config Release -- -j$(nproc) && \
+cmake --build build --config Release --parallel "${BUILD_JOBS}" && \
 cmake --install build --config Release --prefix ./install

@@ -5,6 +5,12 @@ MICRO_XRCE_DDS_AGENT_VERSION=$1
 PX4_MSGS_VERSION=$2
 PX4_ROS2_INTERFACE_LIB_VERSION=$3
 PX4_ROS_COM_VERSION=$4
+BUILD_JOBS=${5:-2}
+
+if ! [[ "${BUILD_JOBS}" =~ ^[1-9][0-9]*$ ]]; then
+    echo "BUILD_JOBS must be a positive integer, got: ${BUILD_JOBS}" >&2
+    exit 1
+fi
 
 mkdir -p /root/px4_ros_ws/src && cd /root/px4_ros_ws/src && \
 git clone --depth 1 -b ${MICRO_XRCE_DDS_AGENT_VERSION} https://github.com/eProsima/Micro-XRCE-DDS-Agent.git && \
@@ -22,4 +28,6 @@ rm -rf ros_gz/ros_ign* \
     image_transport_plugins/zstd_image_transport \
     image_transport_plugins/image_transport_plugins
 cd .. && source /opt/ros/humble/setup.bash
-GZ_VERSION=harmonic colcon build
+export CMAKE_BUILD_PARALLEL_LEVEL="${BUILD_JOBS}"
+export MAKEFLAGS="-j${BUILD_JOBS}"
+GZ_VERSION=harmonic colcon build --executor sequential

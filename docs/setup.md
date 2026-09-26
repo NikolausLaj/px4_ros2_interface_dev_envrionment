@@ -50,6 +50,14 @@ To build the image locally for the host's native architecture, run:
 ./docker/docker_build.sh
 ```
 
+The build uses two parallel compilation jobs by default to stay within typical Docker Desktop memory limits. If the build still reports `cannot allocate memory`, retry with one job:
+
+```sh
+BUILD_JOBS=1 ./docker/docker_build.sh
+```
+
+You can also increase Docker Desktop's memory allocation under **Settings → Resources → Advanced**, if the host has enough available RAM.
+
 ## Container structure
 
 - Most of the required ROS 2 packages are installed through the available binaries:
@@ -370,7 +378,7 @@ Finally `foxglove_bridge` let's us visualize the tf in Foxglove.
 ros2 run foxglove_bridge foxglove_bridge --ros-args -p use_sim_time:=true
 ```
 
-Launch your Foxglove client and open a connection of type _Foxglove WebSocket_ with url `ws://localhost:8765`.
+Launch your Foxglove client and open a connection of type _Foxglove WebSocket_ with url `ws://localhost:8787`.
 
 ![foxglove example](./assets/foxglove.png)
 

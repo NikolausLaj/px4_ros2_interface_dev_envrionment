@@ -1,7 +1,7 @@
 {
     "name": "px4_roscon_25_macos",
     "image": "dronecode/roscon-25-workshop:latest",
-    "forwardPorts": [8765],
+    "forwardPorts": [8787],
     "runArgs": [
         "--publish", "18570:18570/udp"
     ],
@@ -23,7 +23,8 @@
                 "redhat.vscode-yaml",
                 "ms-vscode.live-share",
                 "gruntfuggly.todo-tree",
-                "cschlosser.doxdocgen"
+                "cschlosser.doxdocgen",
+                
             ]
         }
     },

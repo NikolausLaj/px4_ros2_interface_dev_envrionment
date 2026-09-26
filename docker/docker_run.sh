@@ -105,6 +105,7 @@ fi
 
 DOCKER_CMD+=(
     --publish 8765:8765
+    --publish 8787:8787
     --mount "type=bind,source=${REPOSITORY_DIR},target=/home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop"
     --name px4-roscon-25
     --workdir /home/ubuntu/roscon-25-workshop_ws

@@ -23,7 +23,8 @@ RUN groupadd -g 1000 ${USER} && \
 FROM base AS build-opencv
 
 ARG OPENCV_VERSION=4.10.0
-RUN --mount=type=bind,source=./docker/scripts/build_opencv.sh,target=/home/${USER}/scripts/build_opencv.sh /home/${USER}/scripts/build_opencv.sh ${OPENCV_VERSION}
+ARG BUILD_JOBS=2
+RUN --mount=type=bind,source=./docker/scripts/build_opencv.sh,target=/home/${USER}/scripts/build_opencv.sh /home/${USER}/scripts/build_opencv.sh ${OPENCV_VERSION} ${BUILD_JOBS}
 
 ########################################
 ##           BUILD PRE-DEV            ##
@@ -43,7 +44,10 @@ ARG MICRO_XRCE_DDS_AGENT_VERSION=v2.4.2
 ARG PX4_MSGS_VERSION=release/1.16
 ARG PX4_ROS2_INTERFACE_LIB_VERSION=release/1.16
 ARG PX4_ROS_COM_VERSION=release/1.16
-RUN --mount=type=bind,source=./docker/scripts/build_ros_deps.sh,target=/root/scripts/build_ros_deps.sh /root/scripts/build_ros_deps.sh ${MICRO_XRCE_DDS_AGENT_VERSION} ${PX4_MSGS_VERSION} ${PX4_ROS2_INTERFACE_LIB_VERSION} ${PX4_ROS_COM_VERSION}
+ARG BUILD_JOBS=2
+RUN --mount=type=bind,source=./docker/scripts/build_ros_deps.sh,target=/root/scripts/build_ros_deps.sh \
+    /root/scripts/build_ros_deps.sh ${MICRO_XRCE_DDS_AGENT_VERSION} ${PX4_MSGS_VERSION} ${PX4_ROS2_INTERFACE_LIB_VERSION} ${PX4_ROS_COM_VERSION} ${BUILD_JOBS} && \
+    touch /tmp/dep-ros2-ready
 
 ########################################
 ##              BUILD PX4             ##
@@ -52,8 +56,12 @@ RUN --mount=type=bind,source=./docker/scripts/build_ros_deps.sh,target=/root/scr
 FROM pre-dev AS build-px4
 
 ARG PX4_VERSION=v1.16.0
+ARG BUILD_JOBS=2
+# Prevent BuildKit from compiling PX4 and the memory-heavy ROS dependencies at
+# the same time. Only this tiny marker is copied into the intermediate stage.
+COPY --from=dep-ros2 /tmp/dep-ros2-ready /tmp/dep-ros2-ready
 RUN --mount=type=bind,source=./docker/scripts/build_px4.sh,target=/home/${USER}/scripts/build_px4.sh \
-    /home/${USER}/scripts/build_px4.sh ${PX4_VERSION}
+    /home/${USER}/scripts/build_px4.sh ${PX4_VERSION} ${BUILD_JOBS}
 
 ########################################
 ##            INSTALL QGC             ##
@@ -69,6 +77,8 @@ RUN --mount=type=bind,source=./docker/scripts/install_qgc.sh,target=/home/${USER
 ##             BUILD DEV             ##
 ########################################
 FROM pre-dev AS dev
+
+ARG BUILD_JOBS=2
 
 # install built packages
 COPY --from=dep-ros2 --chown=${USER}:${USER} /root/px4_ros_ws/install /home/${USER}/px4_ros_ws/install
@@ -88,7 +98,8 @@ COPY --from=build-px4 --chown=${USER}:${USER} /home/${USER}/PX4-Autopilot/Tools/
 WORKDIR /home/${USER}/roscon-25-workshop_ws/
 COPY --chown=${USER}:${USER} . src/roscon-25-workshop
 RUN source /home/${USER}/px4_ros_ws/install/setup.bash && \
-    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON
+    CMAKE_BUILD_PARALLEL_LEVEL=${BUILD_JOBS} MAKEFLAGS=-j${BUILD_JOBS} \
+    colcon build --executor sequential --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON
 
 WORKDIR /home/${USER}/
 COPY --from=build-px4 --chown=${USER}:${USER} /home/${USER}/px4_sitl /home/${USER}/px4_sitl

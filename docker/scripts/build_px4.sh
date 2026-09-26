@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
 
 PX4_VERSION=$1
+BUILD_JOBS=${2:-2}
 
-git clone  --recurse-submodules -b ${PX4_VERSION} https://github.com/PX4/PX4-Autopilot.git /home/${USER}/PX4-Autopilot
+if ! [[ "${BUILD_JOBS}" =~ ^[1-9][0-9]*$ ]]; then
+    echo "BUILD_JOBS must be a positive integer, got: ${BUILD_JOBS}" >&2
+    exit 1
+fi
+
+git clone \
+    --branch "${PX4_VERSION}" \
+    --depth 1 \
+    --recurse-submodules \
+    --shallow-submodules \
+    https://github.com/PX4/PX4-Autopilot.git \
+    /home/${USER}/PX4-Autopilot
 
 cd /home/${USER}/PX4-Autopilot
 
@@ -48,7 +60,7 @@ index fed292b9d1..1d34854077 100644
 EOF
 
 ./Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
-make px4_sitl_default
+make -j"${BUILD_JOBS}" px4_sitl_default
 cd ..
 mkdir -p px4_sitl/bin
 mkdir -p px4_sitl/romfs/etc
