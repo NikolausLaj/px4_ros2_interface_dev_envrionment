@@ -1,0 +1,10 @@
+terrain_follow_controller:
+  ros__parameters:
+    target_distance: 3.0 
+    kp: 1.525
+    ki: 0.01
+    kd: 0.05
+    max_vel: 3.0
+    min_vel: -3.0
+    integrator_limit: 1.0
+    compensate_angle: false

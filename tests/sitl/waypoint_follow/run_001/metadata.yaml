@@ -1,0 +1,25 @@
+coordinate_convention: PX4 local NED (x North, y East, z Down)
+test_type: waypoint_follow
+run_id: '001'
+date: '2026-10-14T05:22:54+00:00'
+software_commit: 024346fc3c0344e237c0800b4580304a0865d457
+workspace_root: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop
+configuration_source: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop/px4_roscon_25/arva_test_protocol/config/waypoint_follow.yaml
+notes: Single waypoint-follow trial; planned route from WaypointFollowMode.cpp fallback
+  route.
+status: recording_stopped
+status_history:
+- timestamp: '2026-10-14T05:22:54+00:00'
+  state: prepared
+- timestamp: '2026-10-14T05:22:54+00:00'
+  state: recording
+- timestamp: '2026-10-14T05:24:52+00:00'
+  state: recording_stopped
+parameter_snapshots:
+- parameters/waypoint_follow.yaml
+- parameters/terrain_follow.yaml
+- parameters/mode_executor.yaml
+recording_started_at: '2026-10-14T05:22:54+00:00'
+bag_path: bag
+storage_id: mcap
+recording_stopped_at: '2026-10-14T05:24:52+00:00'

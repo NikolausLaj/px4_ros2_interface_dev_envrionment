@@ -1,0 +1,23 @@
+coordinate_convention: PX4 local NED (x North, y East, z Down)
+range_reference: PX4 VehicleLocalPosition.dist_bottom
+test_type: terrain_follow
+run_id: '002'
+date: '2026-10-13T14:05:20+00:00'
+software_commit: 024346fc3c0344e237c0800b4580304a0865d457
+workspace_root: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop
+configuration_source: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop/px4_roscon_25/arva_test_protocol/config/terrain_follow.yaml
+notes: Constant-target terrain trial; target from source controller YAML.
+status: recording_stopped
+status_history:
+- timestamp: '2026-10-13T14:05:20+00:00'
+  state: prepared
+- timestamp: '2026-10-13T14:05:20+00:00'
+  state: recording
+- timestamp: '2026-10-13T14:06:29+00:00'
+  state: recording_stopped
+parameter_snapshots:
+- parameters/terrain_follow.yaml
+recording_started_at: '2026-10-13T14:05:20+00:00'
+bag_path: bag
+storage_id: mcap
+recording_stopped_at: '2026-10-13T14:06:29+00:00'

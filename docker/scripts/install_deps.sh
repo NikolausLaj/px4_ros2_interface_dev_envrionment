@@ -13,6 +13,7 @@ apt-get update && \
 apt-get install -y --no-install-recommends \
     gz-harmonic \
     ros-humble-foxglove-bridge \
+    ros-humble-rosbag2-storage-mcap \
     bc \
     dmidecode \
     libboost-all-dev \
@@ -27,6 +28,7 @@ apt-get install -y --no-install-recommends \
     libxml2-utils \
     pkg-config \
     protobuf-compiler \
+    python3-matplotlib \
     wget \
 	libxcb-xinerama0 \
 	libxkbcommon-x11-0 \

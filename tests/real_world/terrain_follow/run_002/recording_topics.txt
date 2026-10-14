@@ -1,0 +1,5 @@
+/arva_test_protocol/event
+/parameter_events
+/fmu/out/vehicle_local_position
+/fmu/out/vehicle_attitude
+/terrain_controller/cmd_vel

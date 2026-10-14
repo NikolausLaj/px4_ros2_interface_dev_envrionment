@@ -1,0 +1,24 @@
+coordinate_convention: PX4 local NED (x North, y East, z Down)
+flight_condition: operator-stabilized hover with zero commanded linear velocity
+test_type: heading_controller
+run_id: 008
+date: '2026-10-12T15:12:03+00:00'
+software_commit: 024346fc3c0344e237c0800b4580304a0865d457
+workspace_root: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop
+configuration_source: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop/px4_roscon_25/arva_test_protocol/config/heading_controller.yaml
+notes: Single heading response; analyze the fluxline_follow interval.
+status: recording_stopped
+status_history:
+- timestamp: '2026-10-12T15:12:04+00:00'
+  state: prepared
+- timestamp: '2026-10-12T15:12:04+00:00'
+  state: recording
+- timestamp: '2026-10-12T15:12:46+00:00'
+  state: recording_stopped
+parameter_snapshots:
+- parameters/fluxline_follow.yaml
+- parameters/mode_executor.yaml
+recording_started_at: '2026-10-12T15:12:04+00:00'
+bag_path: bag
+storage_id: mcap
+recording_stopped_at: '2026-10-12T15:12:46+00:00'

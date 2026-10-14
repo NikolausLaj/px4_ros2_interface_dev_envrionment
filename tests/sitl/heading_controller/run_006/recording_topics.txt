@@ -1,0 +1,6 @@
+/arva_test_protocol/event
+/arva_master/mode_state
+/pieps/measurement
+/fmu/out/vehicle_local_position
+/fmu/out/vehicle_attitude
+/fluxline_controller/cmd_vel
