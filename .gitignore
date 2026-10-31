@@ -3,3 +3,4 @@ install/
 log/
 .vscode/
 *.mcap
+.DS_Store

@@ -4,6 +4,7 @@ recording:
   - /arva_test_protocol/event
   - /arva_master/mode_state
   - /parameter_events
+  - /fmu/in/trajectory_setpoint
   - /fmu/out/vehicle_local_position
   - /fmu/out/vehicle_attitude
   - /terrain_controller/cmd_vel
@@ -16,8 +17,6 @@ metadata_defaults:
   coordinate_convention: PX4 local NED (x North, y East, z Down)
 test:
   planned_waypoints_ned_m:
-  - - 0.0
-    - 0.0
   - - 0.0
     - 30.0
   - - 20.0

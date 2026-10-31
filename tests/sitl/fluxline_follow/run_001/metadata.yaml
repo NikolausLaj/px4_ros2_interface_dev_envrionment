@@ -1,0 +1,26 @@
+coordinate_convention: PX4 local NED (x North, y East, z Down)
+receiver_reference: ARVA receiver antenna phase center
+test_type: fluxline_follow
+run_id: '001'
+date: '2026-10-29T20:03:17+00:00'
+software_commit: bc540193d59f59256b5b3c9b697566d6abda540f
+workspace_root: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop
+configuration_source: /home/ubuntu/roscon-25-workshop_ws/src/roscon-25-workshop/px4_roscon_25/arva_test_protocol/config/fluxline_follow.yaml
+notes: Single fluxline-follow trial; transmitter position from saved arva_sim.yaml.
+status: recording_stopped
+status_history:
+- timestamp: '2026-10-29T20:03:17+00:00'
+  state: prepared
+- timestamp: '2026-10-29T20:03:17+00:00'
+  state: recording
+- timestamp: '2026-10-29T20:05:22+00:00'
+  state: recording_stopped
+parameter_snapshots:
+- parameters/fluxline_follow.yaml
+- parameters/terrain_follow.yaml
+- parameters/mode_executor.yaml
+- parameters/arva_sim.yaml
+recording_started_at: '2026-10-29T20:03:17+00:00'
+bag_path: bag
+storage_id: mcap
+recording_stopped_at: '2026-10-29T20:05:22+00:00'

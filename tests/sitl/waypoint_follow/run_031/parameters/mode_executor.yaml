@@ -1,0 +1,7 @@
+/arva_master:
+  ros__parameters:
+    takeoff_altitude: 2.0
+    takeoff_heading: .nan
+    waypoint_tolerance: 0.5
+    fine_search:
+      auto_complete_on_search_result: false
