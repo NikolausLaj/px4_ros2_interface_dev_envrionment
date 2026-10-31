@@ -5,3 +5,7 @@
 [submodule "px4_roscon_25/pieps_interfacer"]
 	path = px4_roscon_25/pieps_interfacer
 	url = https://github.com/NikolausLaj/pieps_interfacer.git
+[submodule "px4_roscon_25/arva_test_protocol"]
+	path = px4_roscon_25/arva_test_protocol
+	url = https://github.com/NikolausLaj/arva_recored.git
+	branch = main

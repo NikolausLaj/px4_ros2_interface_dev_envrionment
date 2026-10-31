@@ -44,6 +44,25 @@
   
 
 
+## ARVA test recording and analysis
+
+The `arva_test_protocol` ROS package is maintained in the standalone
+[arva_recored repository](https://github.com/NikolausLaj/arva_recored) and included
+here as a submodule at `px4_roscon_25/arva_test_protocol`.
+
+After cloning or updating this workshop repository, initialize the submodules:
+
+```sh
+git submodule update --init --recursive
+```
+
+Build `arva_test_protocol` from the ROS workspace as before. The existing
+simulation recordings remain under this repository's `tests/sitl/` directory.
+For installation on the real drone, clone `arva_recored` directly into its ROS
+workspace's `src/arva_test_protocol` directory. See the
+[package instructions](px4_roscon_25/arva_test_protocol/README.md) for standalone
+setup, `--environment real_world`, and output-directory options.
+
 ## About
 
 Picture yourself in Gazebo, sending velocity, position, and acceleration commands straight from your ROS 2 nodes while PX4 quietly manages real-time flight control and built-in safety.

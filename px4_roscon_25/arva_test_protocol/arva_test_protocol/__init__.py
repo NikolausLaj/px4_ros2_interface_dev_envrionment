@@ -1,1 +1,0 @@
-"""Tools for repeatable, operator-supervised ARVA flight experiments."""
