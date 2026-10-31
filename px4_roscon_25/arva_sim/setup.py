@@ -11,6 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', ['launch/arva_sim.launch.py']),
+        ('share/' + package_name + '/cfg', ['cfg/arva_sim.yaml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

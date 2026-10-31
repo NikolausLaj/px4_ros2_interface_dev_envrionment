@@ -7,19 +7,49 @@ import numpy as np
 import math
 
 class ArvaSim(Node):
-    def __init__(self):
-        super().__init__('arva_sim_node')
+    def __init__(self, *, parameter_overrides=None):
+        super().__init__('arva_sim_node', parameter_overrides=parameter_overrides)
 
         self._drone_pos = None
         self._drone_heading = None
         self._tx_pos = None
         self._tx_theta = None
 
+        self.loadParameters()
         self.initSubscribers()
         self.initPublishers()
         self.initTimers()
         self.spawnTransmitter()
         self.get_logger().info('ArvaSim node has been started.')
+
+
+    def loadParameters(self):
+        # Startup parameters; use the same NED frame as PX4 local position.
+        position = self.declare_parameter(
+            'transmitter_position_ned_m', [30.0, 20.0, 0.0]).value
+        heading_deg = self.declare_parameter('transmitter_heading_deg', -90.0).value
+        if len(position) != 3 or not all(math.isfinite(value) for value in position):
+            raise ValueError('transmitter_position_ned_m must contain three finite NED coordinates')
+        if not math.isfinite(heading_deg):
+            raise ValueError('transmitter_heading_deg must be finite')
+        self._tx_pos = np.array(position, dtype=float)
+        self._tx_theta = np.radians(heading_deg)
+
+        self._receiver_vertical_offset_m = self.declare_parameter(
+            'receiver_vertical_offset_m', 0.65).value
+        self._angle_valid_min_distance_m = self.declare_parameter(
+            'angle_valid_min_distance_m', 4.0).value
+        self._max_detection_range_m = self.declare_parameter(
+            'max_detection_range_m', 15.0).value
+        if not math.isfinite(self._receiver_vertical_offset_m):
+            raise ValueError('receiver_vertical_offset_m must be finite')
+        if (
+            not math.isfinite(self._angle_valid_min_distance_m)
+            or self._angle_valid_min_distance_m < 0.0
+        ):
+            raise ValueError('angle_valid_min_distance_m must be finite and nonnegative')
+        if not math.isfinite(self._max_detection_range_m) or self._max_detection_range_m <= 0.0:
+            raise ValueError('max_detection_range_m must be finite and greater than zero')
 
 
     def initSubscribers(self):
@@ -48,12 +78,7 @@ class ArvaSim(Node):
 
 
     def spawnTransmitter(self):
-        # TODO hardcoded for now. Use searchfield coords to randomly init location
-        # Transmitter position in NED frame: [North, East, Down]
-        # Here: 20 m East of the origin (same NED frame as PX4 local position)
-        self._tx_pos = np.array([200.0, 200.0, 0.0]) #TODO 30.0, 20.0 Create Parameter to set transmitter position
         m_vec = np.array([0.0, 1.0, 0.0])
-        self._tx_theta = np.radians(-90.0) #TODO Create Parameter to set transmitter orientation
         
         # Yaw rotation about +Down axis in NED (clockwise-positive heading convention)
         R_tx = np.array([
@@ -67,14 +92,12 @@ class ArvaSim(Node):
 
 
     def localPositionCallback(self, msg):
-        z_transform = 0.65  # TODO Create Parameter to compensate for lowering rel to base_link
         # PX4 VehicleLocalPosition is NED: x=North, y=East, z=Down
-        self._drone_pos = np.array([round(msg.x,2), round(msg.y,2), round(msg.z,2) - z_transform])
+        self._drone_pos = np.array([
+            round(msg.x, 2), round(msg.y, 2),
+            round(msg.z, 2) - self._receiver_vertical_offset_m,
+        ])
         self._drone_heading = msg.heading
-
-        # self._drone_pos = np.array([0.0, 0.0, 0 + z_transform])
-        # self._drone_heading = 0.0
-
 
     def arvaTimer(self):
         if self._drone_pos is None:
@@ -90,7 +113,7 @@ class ArvaSim(Node):
             msg.distance = float(distance)
             msg.angle = float(delta)  # radians
 
-            msg.angle_valid = bool(distance > 4.0)      # angle not valid within 2 m radius # TODO nomaly 2m, add to parameters
+            msg.angle_valid = bool(distance > self._angle_valid_min_distance_m)
             msg.distance_valid = bool(distance > 0.0)   # valid as long as signal is present
 
             self._arva_pub.publish(msg)
@@ -121,12 +144,10 @@ class ArvaSim(Node):
 
         d1 = (constant / abs(H_strength[0])) ** (1/3) if abs(H_strength[0]) > 1e-12 else -1
 
-        r_noise = 15.00  # TODO make parameter. max detection range in meters
-
         if d3 <= 2.0:
             distance = d3
             delta = 0.0
-        elif d1 <= r_noise:
+        elif d1 <= self._max_detection_range_m:
             distance = d1
             # Flux lines are undirected: choose the field direction (or its anti-parallel)
             # that points into the same half-plane as the vector toward the transmitter.
