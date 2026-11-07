@@ -14,6 +14,7 @@ apt-get install -y --no-install-recommends \
     gz-harmonic \
     ros-humble-foxglove-bridge \
     ros-humble-rosbag2-storage-mcap \
+    ros-humble-geographic-msgs \
     bc \
     dmidecode \
     libboost-all-dev \
@@ -23,6 +24,7 @@ apt-get install -y --no-install-recommends \
     gstreamer1.0-plugins-ugly \
     gstreamer1.0-libav \
     libeigen3-dev \
+    libgeographiclib-dev \
     libgstreamer-plugins-base1.0-dev \
     libimage-exiftool-perl \
     libxml2-utils \
