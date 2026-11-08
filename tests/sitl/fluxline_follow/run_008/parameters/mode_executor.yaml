@@ -1,0 +1,17 @@
+/arva_master:
+  ros__parameters:
+    takeoff_altitude: 2.0
+    takeoff_heading: .nan
+    waypoint_tolerance: 0.5
+    fine_search:
+      auto_complete_on_search_result: false
+      # ARVA distance [m] below which FluxlineFollow switches to FineSearch even
+      # while the angle is still valid. Note: the ARVA distance is a slant range
+      # (includes altitude + receiver offset), so 5.0 m corresponds to roughly
+      # 3.6 m horizontal at 2 m takeoff altitude. Set to 0.0 to disable the
+      # distance trigger; the real ARVA receiver then triggers FineSearch on its
+      # own by invalidating the angle at close range.
+      transition_distance_m: 5.0
+      # Hysteresis [m]: FineSearch hands back to FluxlineFollow only once the
+      # distance exceeds transition_distance_m + hysteresis_m.
+      hysteresis_m: 1.0

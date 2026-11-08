@@ -8,7 +8,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # install dependencies
-RUN --mount=type=bind,source=./docker/scripts/install_deps.sh,target=/root/scripts/install_deps.sh /root/scripts/install_deps.sh
+# COPY (not bind-mount) so edits to the script bust the Docker cache
+COPY docker/scripts/install_deps.sh /root/scripts/install_deps.sh
+RUN /root/scripts/install_deps.sh
 
 # Add user
 ENV USER=ubuntu
