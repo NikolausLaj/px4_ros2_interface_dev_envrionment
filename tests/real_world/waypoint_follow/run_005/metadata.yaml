@@ -1,0 +1,27 @@
+coordinate_convention: PX4 local NED (x North, y East, z Down)
+environment: real_world
+test_type: waypoint_follow
+run_id: '005'
+date: '2026-11-08T12:04:20+01:00'
+software_commit: null
+workspace_root: /home/nikolaus/ros2_ws
+configuration_source: /home/nikolaus/ros2_ws/install/arva_test_protocol/share/arva_test_protocol/config/waypoint_follow.yaml
+recorder_commit: null
+notes: Single waypoint-follow trial; planned route from not set; add planned_waypoints_ned_m
+  to the run config.yaml before analysis.
+status: recording_stopped
+status_history:
+- timestamp: '2026-11-08T12:04:20+01:00'
+  state: prepared
+- timestamp: '2026-11-08T12:04:20+01:00'
+  state: recording
+- timestamp: '2026-11-08T12:06:02+01:00'
+  state: recording_stopped
+parameter_snapshots:
+- parameters/waypoint_follow.yaml
+- parameters/terrain_follow.yaml
+- parameters/mode_executor.yaml
+recording_started_at: '2026-11-08T12:04:20+01:00'
+bag_path: bag
+storage_id: mcap
+recording_stopped_at: '2026-11-08T12:06:02+01:00'
