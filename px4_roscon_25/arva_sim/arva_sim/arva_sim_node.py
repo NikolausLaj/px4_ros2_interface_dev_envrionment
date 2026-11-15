@@ -142,12 +142,17 @@ class ArvaSim(Node):
 
         d3 = (constant / H_norm) ** (1/3) if H_norm > 1e-12 else -1
 
-        d1 = (constant / abs(H_strength[0])) ** (1/3) if abs(H_strength[0]) > 1e-12 else -1
+        # Project the NED field onto the receiver's forward axis, assuming a level drone.
+        H_forward = (
+            H_strength[0] * np.cos(self._drone_heading)
+            + H_strength[1] * np.sin(self._drone_heading)
+        )
+        d1 = (constant / abs(H_forward)) ** (1/3) if abs(H_forward) > 1e-12 else -1
 
-        if d3 <= 2.0:
+        if 0 <= d3 <= 2.0:
             distance = d3
             delta = 0.0
-        elif d1 <= self._max_detection_range_m:
+        elif 0 <= d1 <= self._max_detection_range_m:
             distance = d1
             # Flux lines are undirected: choose the field direction (or its anti-parallel)
             # that points into the same half-plane as the vector toward the transmitter.
@@ -172,10 +177,14 @@ class ArvaSim(Node):
     def mapMeasuremntToPiepsMsgs(self, distance, delta):
         """Quantize the continuous angle measurement to discrete levels."""
         angle_deg = math.degrees(delta)
+        abs_angle = abs(angle_deg)
+
+        # Special case: if angle is very small, keep it as zero (drone is aligned with flux line)
+        # if abs_angle < 10:
+        #     return distance, 0.0
 
         # Quantize to ceiling threshold levels
         thresholds = [20, 30, 40, 50, 60]
-        abs_angle = abs(angle_deg)
 
         # Find the ceiling threshold
         quantized_abs = 60  # Default to max
