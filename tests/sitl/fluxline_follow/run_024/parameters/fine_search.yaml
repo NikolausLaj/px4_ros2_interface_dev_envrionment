@@ -1,0 +1,5 @@
+fine_search_controller:
+  ros__parameters:
+    dist_max: 0.5 # maximal distance between two setpoints
+    return_tollerance: 0.25 # tollerance when returning to min point
+    search_from_min: 1.0 # distance to search from the minimum point

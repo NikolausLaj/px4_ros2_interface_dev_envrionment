@@ -1,0 +1,11 @@
+/arva_test_protocol/event
+/arva_master/mode_state
+/pieps/measurement
+/fmu/out/vehicle_local_position
+/fmu/out/vehicle_attitude
+/terrain_controller/cmd_vel
+/fluxline_controller/cmd_vel
+/finesearch_controller/cmd_vel
+/finesearch_controller/completed
+/finesearch_controller/estimated_position
+/finesearch_controller/state

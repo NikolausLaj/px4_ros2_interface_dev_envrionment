@@ -1,0 +1,13 @@
+arva_sim_node:
+  ros__parameters:
+    # Position in meters: [North, East, Down], relative to the PX4 local origin.
+    transmitter_position_ned_m: [7.50, 15.0, 0.0]
+    # Rotation in degrees applied to the simulator's transmitter dipole.
+    # Preserves the existing rotation convention in spawnTransmitter().
+    transmitter_heading_deg: -15.0
+    # Subtracted from the rounded PX4 Down coordinate, preserving the existing sign.
+    receiver_vertical_offset_m: 0.65
+    # Angle is valid only when the simulated receiver distance exceeds this value.
+    angle_valid_min_distance_m: 4.0
+    # Maximum simulated receiver distance accepted in the far-field branch.
+    max_detection_range_m: 15.0
